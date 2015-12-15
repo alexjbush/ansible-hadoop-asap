@@ -1,10 +1,19 @@
 # -*- mode: ruby -*-
 
 # vi: set ft=ruby :
-
-file = open("inventories/vagrant.json")
-json = file.read
-boxes = JSON.parse(json)
+require 'open3'
+require 'json'
+stdin, stdout, stderr, wait_thr = Open3.popen3('python inventories/inventory.py --vagrant')
+output = stdout.gets(nil)
+stdout.close
+err_output = stderr.gets(nil)
+stderr.close
+exit_code = wait_thr.value
+if exit_code != 0
+	puts "Error running dynamic inventory:\n"+err_output
+	exit 1
+end
+boxes = JSON.parse(output)
 
 Vagrant.configure(2) do |config|
 
@@ -13,7 +22,7 @@ Vagrant.configure(2) do |config|
   # Turn off shared folders
   config.vm.synced_folder ".", "/vagrant", id: "vagrant-root", disabled: true
 
-  boxes.each do |opts|
+  boxes.each do |host, opts|
     config.vm.define opts["name"] do |config|
       config.vm.hostname = opts["name"]
 
