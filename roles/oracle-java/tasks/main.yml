@@ -1,0 +1,67 @@
+---
+- name: include set vars task
+  include: set_vars.yml
+
+- name: check to see if jdk is installed
+  command: rpm -q jdk
+  register: jdk_check
+  failed_when: jdk_check.rc > 1
+  changed_when: no
+
+- name: download oracle jdk if not installed
+  command: curl -L  -H 'Cookie:oraclelicense=accept-securebackup-cookie'  -o /tmp/{{ jdk_tarball_file }}.rpm  {{ jdk_tarball_url }}.rpm
+  when: jdk_check.rc == 1
+
+- name: install oracle jdk if not installed
+  yum: name=/tmp/{{ jdk_tarball_file }}.rpm state=present
+  when: jdk_check.rc == 1
+  sudo: yes
+
+- name: remove oracle jdk file
+  file: path=/tmp/{{ jdk_tarball_file }}.rpm state=absent
+  when: jdk_check.rc == 1
+
+- name: check to see if unlimited jce has been done
+  stat: path="{{ jce_security_path }}/unlimited_jce_applied.ansible"
+  register: jce_test
+
+- name: download unlimited jce
+  command: curl -L  -H 'Cookie:oraclelicense=accept-securebackup-cookie'  -o "/tmp/UnlimitedJCEPolicyJDK{{ java_version }}.zip" "{{ unlimited_jce_url }}" 
+  when: "not jce_test.stat.exists"
+
+- name: install unzip
+  yum: name=unzip state=present
+  sudo: yes
+
+- name: untar the jce policies
+  command: unzip "/tmp/UnlimitedJCEPolicyJDK{{ java_version }}.zip"
+  args: 
+    chdir: /tmp/
+  when: "not jce_test.stat.exists"
+
+- name: copy policies into jce security dir
+  command: cp "/tmp/{{ unlimited_jce_path }}/{{ item }}" "{{ jce_security_path }}/{{ item }}"
+  when: "not jce_test.stat.exists"
+  sudo: yes
+  with_items:
+    - local_policy.jar
+    - US_export_policy.jar
+
+- name: copy policies into jce security dir
+  file: path="{{ jce_security_path }}/{{ item }}" owner=root group=root mode=444
+  when: "not jce_test.stat.exists"
+  sudo: yes
+  with_items:
+    - local_policy.jar
+    - US_export_policy.jar
+
+- name: remove jce files
+  file: path="{{ item }}" state=absent
+  with_items:
+    - "/tmp/UnlimitedJCEPolicyJDK{{ java_version }}.zip"
+    - "/tmp/{{ unlimited_jce_path }}"
+
+- name: place marker file when done
+  file: path="{{ jce_security_path }}/unlimited_jce_applied.ansible" state=touch
+  when: "not jce_test.stat.exists"
+  sudo: yes

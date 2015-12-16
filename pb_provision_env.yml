@@ -1,0 +1,20 @@
+---
+- name: put entries in hosts file
+  hosts: "{{ cluster_name }}"
+  roles:
+    - hosts_file
+
+- name: hadoop specific configuration
+  hosts: "{{ cluster_name }}"
+  roles:
+    - hadoop_os_configuration
+
+- name: mysql server install
+  hosts: mysql:&{{ cluster_name }}
+  roles:
+    - mysql_server
+
+- name: install oracle java
+  hosts: "{{ cluster_name }}"
+  roles:
+    - oracle-java

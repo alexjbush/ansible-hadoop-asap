@@ -1,0 +1,44 @@
+- name: install mysql
+  yum: name=mysql-server state=present
+  sudo: yes
+
+- name: start mysql
+  service: name=mysqld state=started
+  sudo: yes
+
+- name: checkconfig mysql test
+  shell: /sbin/chkconfig --list mysqld | grep on
+  register: chkconfig
+  failed_when: chkconfig.rc > 1
+  changed_when: no
+
+- name: checkconfig mysql on
+  shell: /sbin/chkconfig mysqld on
+  when: "chkconfig.rc == 1"
+  sudo: yes
+
+- name: check to see if mysql python is installed
+  command: pip show mysql-python
+  register: mysql_python_check
+  failed_when: mysql_python_check.rc > 2
+  changed_when: no
+
+- name: install epel release to get pip
+  yum: name=epel-release state=present
+  when: "mysql_python_check.rc == 1 or mysql_python_check.rc == 2"
+  sudo: yes
+
+- name: install requirements for mysql-python
+  yum: name=python-pip,python-devel,mysql-devel,gcc state=present
+  when: "mysql_python_check.rc == 1 or mysql_python_check.rc == 2"
+  sudo: yes
+
+- name: install mysql-python
+  pip: name=mysql-python
+  when: "mysql_python_check.rc == 1 or mysql_python_check.rc == 2"
+  sudo: yes
+
+- name: remove epel release to get mysql server
+  yum: name=epel-release state=absent
+  when: "mysql_python_check.rc == 1 or mysql_python_check.rc == 2"
+  sudo: yes

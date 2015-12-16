@@ -23,8 +23,8 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder ".", "/vagrant", id: "vagrant-root", disabled: true
 
   boxes.each do |host, opts|
-    config.vm.define opts["name"] do |config|
-      config.vm.hostname = opts["name"]
+    config.vm.define host do |config|
+      config.vm.hostname = host
 
       config.vm.provider "vmware_fusion" do |v|
         v.vmx["memsize"] = opts["mem"]
@@ -36,7 +36,7 @@ Vagrant.configure(2) do |config|
         v.customize ["modifyvm", :id, "--cpus", opts["cpu"]]
       end
 
-      config.vm.network :private_network, ip: opts["eth1"]
+      config.vm.network :private_network, ip: opts["ip"]
     end
   end
 end

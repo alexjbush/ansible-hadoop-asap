@@ -1,0 +1,15 @@
+---
+- name: create krb5 file
+  hosts: "{{ cluster_name }}"
+  roles:
+    - etc_krb5
+
+- name: install haveged (for AWS vms due to low entropy)
+  hosts: kdcmaster:&{{ cluster_name }}
+  roles:
+    - haveged
+
+- name: create the kdc
+  hosts: kdcmaster:&{{ cluster_name }}
+  roles:
+    - kdcmaster

@@ -1,0 +1,4 @@
+---
+kdc_master_key: kdcmaster
+kdc_admin_username: kdcadmin
+kdc_admin_password: kdcadmin

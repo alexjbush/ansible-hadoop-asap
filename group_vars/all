@@ -1,0 +1,8 @@
+---
+dns_enabled: no
+krb_realm: HADOOP.TEST
+krb_domain: vagrant
+#Oracle JDK versions
+#Check roles/oracle-java/tasks/set_vars.yml for allowed values
+java_version: 7
+java_subversion: 75

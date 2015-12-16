@@ -1,0 +1,14 @@
+---
+- name: stop iptables
+  service: name=iptables state=stopped
+  sudo: yes
+  with_items:
+    - iptables
+    - ip6tables
+    - firewalld
+
+- name: include task for page files
+  include: page_files.yml
+
+- name: include task for config files
+  include: config_files.yml

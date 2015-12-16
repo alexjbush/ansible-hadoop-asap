@@ -1,0 +1,6 @@
+---
+- name: put host file entries in file
+  lineinfile: dest=/etc/hosts line="{{ hostvars[item]['ip'] }} {{ item }}" state=present
+  when: "not dns_enabled and hostvars[item]['ip'] is defined"
+  with_items: groups[cluster_name]
+  sudo: yes

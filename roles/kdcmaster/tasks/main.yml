@@ -1,0 +1,66 @@
+---
+- name: include kdc config vars
+  include_vars: vars/kdc_config
+
+- name: check whether kdc has been configured
+  stat: path=/var/kerberos/krb5kdc/principal
+  register: kdc_check
+
+- name: install krb server
+  yum: name=krb5-server,expect state=present
+  sudo: yes
+  when: "not kdc_check.stat.exists"
+
+- name: place kdc conf file
+  template: src=kdc.conf.j2 dest=/var/kerberos/krb5kdc/kdc.conf owner=root group=root mode=0600
+  sudo: yes
+  when: "not kdc_check.stat.exists"
+
+- name: install expect (replace with ansible expect after v2)
+  yum: name=expect state=present
+  sudo: yes
+  when: "not kdc_check.stat.exists"
+
+- name: place expect script
+  template: src=kdb5_create.exp.j2 dest=/tmp/kdb5_create.exp owner=root group=root mode=0700
+  sudo: yes
+  when: "not kdc_check.stat.exists"
+
+- name: run kdb5 create script
+  command: /usr/bin/expect /tmp/kdb5_create.exp
+  sudo: yes
+  when: "not kdc_check.stat.exists"
+
+- name: remove expect script
+  file: path=/tmp/kdb5_create.exp state=absent
+  sudo: yes
+  when: "not kdc_check.stat.exists"
+
+- name: start krb5kdc
+  service: name=krb5kdc state=started
+  sudo: yes
+
+- name: start kadmin
+  service: name=kadmin state=started
+  sudo: yes
+
+- name: create admin principal
+  shell: kadmin.local -q "addprinc -pw {{ kdc_admin_password }} {{ kdc_admin_username }}/admin"
+  sudo: yes
+  register: kadminlocal
+  changed_when: "'created' in kadminlocal.stdout"
+
+- name: remove example acl
+  lineinfile: dest=/var/kerberos/krb5kdc/kadm5.acl regexp="^\*/admin@EXAMPLE.COM.*" state=absent
+  sudo: yes
+  register: acl_example
+
+- name: add admin acl
+  lineinfile: dest=/var/kerberos/krb5kdc/kadm5.acl line="{{ kdc_admin_username }}/admin@{{ krb_realm }}   *" state=present
+  sudo: yes
+  register: acl_admin
+
+- name: restart kadmin
+  service: name=kadmin state=restarted
+  sudo: yes
+  when: "acl_example.changed or acl_admin.changed"

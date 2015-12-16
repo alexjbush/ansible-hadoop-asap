@@ -1,0 +1,17 @@
+---
+- name: set line facts for pagefiles
+  set_fact: pagelines="[ 'echo never > /sys/kernel/mm/transparent_hugepage/enabled', 'echo never > /sys/kernel/mm/transparent_hugepage/defrag' ]"
+
+- name: make sure transparent page files are disabled
+  lineinfile: dest=/etc/rc.local line="{{ item }}"
+  sudo: yes
+  with_items: pagelines
+  register: page_changes
+
+- name: run transparent page lines
+  shell: "{{ item.0 }}"
+  when: "item.1.changed"
+  sudo: yes
+  with_together:
+    - pagelines
+    - page_changes.results

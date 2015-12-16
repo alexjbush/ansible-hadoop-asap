@@ -1,0 +1,25 @@
+---
+- name: check to see if haveged is installed
+  command: rpm -q haveged
+  register: haveged_check
+  failed_when: haveged_check.rc > 1
+  changed_when: no
+
+- name: install epel
+  yum: name=epel-release state=present
+  sudo: yes
+  when: haveged_check.rc == 1
+
+- name: install haveged
+  yum: name=haveged state=present
+  sudo: yes
+  when: haveged_check.rc == 1
+
+- name: remove epel
+  yum: name=epel-release state=absent
+  sudo: yes
+  when: haveged_check.rc == 1
+
+- name: start haveged
+  service: name=haveged state=started
+  sudo: yes

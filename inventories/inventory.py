@@ -10,10 +10,12 @@ def parse_opts():
 		help="List groups and hosts in groups")
 	parser.add_option("--vagrant", dest="vagrant", default=False, action="store_true",
 		help="Output vagrant file syntax")
+	parser.add_option("--hosts-file", dest="hosts_file", default=False, action="store_true",
+		help="Output hosts file listing of hosts")
 	parser.add_option("--host", dest="host", help="Details for a given host", metavar='HOST')
 	(options, args) = parser.parse_args()
 	#if options.list and options.host:
-	if sum([1 for opt in [options.list, options.vagrant, options.host] if opt]) > 1:
+	if sum([1 for opt in [options.list, options.vagrant, options.host, options.hosts_file] if opt]) > 1:
 		print('Please only specify one commandline argument',file=sys.stderr)
 		parser.print_help()
 		sys.exit(1)
@@ -23,6 +25,8 @@ def parse_opts():
 		return('host',options.host)
 	elif options.vagrant:
 		return('vagrant','')
+	elif options.hosts_file:
+		return('hosts_file','')
 	else:
 		print('Please specify an action',file=sys.stderr)
 		parser.print_help()
@@ -46,10 +50,15 @@ def read_config():
 		sys.exit(3)
 	configs=dict()
 	configs['database_file'] = os.path.dirname(config_file)+'/'+config.get('default','database')
-	if config.has_option('default','ignore_existing_host_variables'):
-		configs['ignore_existing'] = config.getboolean('default','ignore_existing_host_variables')
-	else:
-		configs['ignore_existing'] = False
+	def get_config_boolean(config_object,key,default=False):
+		if config.has_option('default',key):
+			value = config.getboolean('default',key)
+		else:
+			value = default
+		return value
+	configs['ignore_existing'] = get_config_boolean(config,'ignore_existing_host_variables')
+	configs['group_by_cluster_name'] = get_config_boolean(config,'group_by_cluster_name')
+	configs['prepend_group_with_cluster_name'] = get_config_boolean(config,'prepend_groups_by_cluster_name')
 	host_vars=['ansible_ssh_user','ansible_ssh_private_key_file']
 	configs['host_vars']=dict()
 	for var in host_vars:
@@ -78,8 +87,35 @@ def load_db(config):
 				database['hosts'][host][host_var] = host_var_val
 	return database
 
-def list_action(inventory):
+def _add_host_to_group(groups,group_name,host):
+	if not group_name in groups.keys():
+		groups[group_name] = list()
+		groups[group_name].append(host)
+	elif type(groups[group_name]) is list:
+		groups[group_name].append(host)
+	else:
+		groups[group_name]['hosts'].append(host)
+	return groups
+
+def _get_hosts_in_group(group):
+	if type(group) is list:
+		return group
+	else:
+		return group['hosts']
+
+def list_action(inventory,configs):
 	groups = inventory['groups']
+	if configs['group_by_cluster_name'] or configs['prepend_group_with_cluster_name']:
+		hosts = inventory['hosts']
+		for host,hostvars in hosts.iteritems():
+			if 'cluster_name' in hostvars.keys():
+				cluster_name = hostvars['cluster_name']
+				if configs['group_by_cluster_name']:
+					groups = _add_host_to_group(groups,cluster_name,host)
+				if configs['prepend_group_with_cluster_name']:
+					for group in groups.keys():
+						if not group.startswith(cluster_name) and host in _get_hosts_in_group(groups[group]):
+							groups = _add_host_to_group(groups,cluster_name+'_'+group,host)
 	print(json.dumps(groups,sort_keys=True,indent=4))
 
 def host_action(inventory,host):
@@ -93,16 +129,24 @@ def vagrant_action(inventory):
 	hosts = inventory['hosts']
 	print(json.dumps(hosts,sort_keys=True,indent=4))
 
+def hosts_file_action(inventory):
+	hosts = inventory['hosts']
+	for host,hostvars in hosts.iteritems():
+		if 'ip' in hostvars.keys():
+			print(hostvars['ip']+' '+host)
+
 def main():
 	config = read_config()
 	inventory = load_db(config)
 	action,arg = parse_opts()
 	if action == 'list':
-		list_action(inventory)
+		list_action(inventory,config)
 	elif action == 'host':
 		host_action(inventory,arg)
 	elif action == 'vagrant':
 		vagrant_action(inventory)
+	elif action == 'hosts_file':
+		hosts_file_action(inventory)
 
 if __name__ == '__main__':
 	main()

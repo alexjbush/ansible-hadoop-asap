@@ -1,26 +1,25 @@
 {
   "hosts": 
   {
-    "192.168.205.10":
+    "mn01.vagrant":
     {
-      "name": "server1",
-      "eth1": "192.168.205.10",
+      "ip": "192.168.205.10",
       "mem": "1024",
-      "ansible_user": "root",
+      "cluster_name": "vagrantcluster",
       "cpu": "1" 
     },
-    "192.168.205.11":
+    "mn02.vagrant":
     {
-      "name": "server2",
-      "eth1": "192.168.205.11",
+      "ip": "192.168.205.11",
       "mem": "1024",
+      "cluster_name": "vagrantcluster",
       "cpu": "1" 
     },
-    "192.168.205.12":
+    "mn03.vagrant":
     {
-      "name": "server3",
-      "eth1": "192.168.205.12",
+      "ip": "192.168.205.12",
       "mem": "2048",
+      "cluster_name": "vagrantcluster",
       "cpu": "1" 
     }
   },
@@ -28,7 +27,7 @@
   {
     "mn01":
       {
-        "hosts": [ "192.168.205.10" ],
+        "hosts": [ "mn01.vagrant" ],
         "vars":
         {
           "mn01_var": "var"
@@ -36,12 +35,13 @@
       },
     "mn02":
       {
-        "hosts": [ "192.168.205.11" ]
+        "hosts": [ "mn02.vagrant" ]
       },
-    "mn03": [ "192.168.205.12" ],
+    "mn03": [ "mn03.vagrant" ],
+    "kdcmaster": [ "mn01.vagrant" ],
     "mysql":
       {
-        "hosts": [ "192.168.205.12" ]
+        "hosts": [ "mn03.vagrant" ]
       }
   }
 }

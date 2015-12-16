@@ -1,0 +1,12 @@
+#!/bin/expect
+set timeout 20
+spawn sh -c {kdb5_util create -s}
+expect "Enter KDC database master key:"
+send "{{ kdc_master_key }}\r"
+expect "Re-enter KDC database master key to verify:"
+send "{{ kdc_master_key }}\r"
+expect eof
+
+lassign [wait] pid spawnid os_error_flag value
+
+exit $value

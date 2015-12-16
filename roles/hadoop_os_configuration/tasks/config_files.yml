@@ -1,0 +1,11 @@
+---
+- name: copy limits files into locations
+  copy: src={{ item.src_name }} dest={{ item.dest_name }} owner=root group=root
+  sudo: yes
+  with_items:
+    - src_name: limits.conf
+      dest_name: /etc/limits.conf
+    - src_name: security_limits.conf
+      dest_name: /etc/security/limits.conf
+    - src_name: 90-nproc.conf
+      dest_name: /etc/security/limits.d/90-nproc.conf
