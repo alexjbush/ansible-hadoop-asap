@@ -1,0 +1,5 @@
+---
+users:
+  - username: test_user
+    password: test_user
+    uid: 50001

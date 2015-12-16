@@ -1,0 +1,10 @@
+---
+mysql_ambari_database: ambari
+mysql_ambari_user: ambari
+mysql_ambari_password: bigdata
+mysql_hive_database: hive
+mysql_hive_user: hive
+mysql_hive_password: hive
+mysql_oozie_database: oozie
+mysql_oozie_user: oozie
+mysql_oozie_password: oozie

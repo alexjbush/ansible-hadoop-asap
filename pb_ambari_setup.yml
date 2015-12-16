@@ -1,0 +1,10 @@
+---
+- name: ambari agent setup
+  hosts: "{{ cluster_name }}"
+  roles:
+    - ambariagent
+
+- name: ambari server setup
+  hosts: ambariserver:&{{ cluster_name }}
+  roles:
+    - ambariserver

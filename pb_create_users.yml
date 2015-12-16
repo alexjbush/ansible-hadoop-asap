@@ -1,0 +1,10 @@
+---
+- name: create local users
+  hosts: "{{ cluster_name }}"
+  roles:
+    - create_local_users
+
+- name: create kerberos users
+  hosts: kdcmaster:&{{ cluster_name }}
+  roles:
+    - create_kerberos_users

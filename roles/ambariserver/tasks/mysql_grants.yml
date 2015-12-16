@@ -1,0 +1,43 @@
+---
+- name: create databases for hive, oozie and ambari
+  mysql_db: name="{{ item }}" state=present
+  delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
+  sudo: yes
+  with_items:
+    - "{{ mysql_ambari_database }}"
+    - "{{ mysql_hive_database }}"
+    - "{{ mysql_oozie_database }}"
+
+- name: grant to ambari database
+  mysql_user: >
+        name="{{ mysql_ambari_user }}" password="{{ mysql_ambari_password }}"
+        priv="{{ mysql_ambari_database }}".*:ALL state=present host="{{ item }}"
+  delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
+  with_items:
+    - localhost
+    - "{{ groups[cluster_name+'_mysql'][0] }}"
+    - "{{ groups[cluster_name+'_ambariserver'][0] }}"
+  sudo: yes
+
+- name: grant to hive database
+  mysql_user: >
+        name="{{ mysql_hive_user }}" password="{{ mysql_hive_password }}"
+        priv="{{ mysql_hive_database }}".*:ALL state=present host="{{ item }}"
+  delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
+  with_items:
+    - localhost
+    - "{{ groups[cluster_name+'_mysql'][0] }}"
+    - "{{ groups[cluster_name+'_ambariserver'][0] }}"
+  sudo: yes
+
+- name: grant to oozie database
+  mysql_user: >
+        name="{{ mysql_oozie_user }}" password="{{ mysql_oozie_password }}"
+        priv="{{ mysql_oozie_database }}".*:ALL state=present host="{{ item }}"
+  delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
+  with_items:
+    - localhost
+    - "{{ groups[cluster_name+'_mysql'][0] }}"
+    - "{{ groups[cluster_name+'_ambariserver'][0] }}"
+  sudo: yes
+

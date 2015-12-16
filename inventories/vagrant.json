@@ -38,6 +38,7 @@
         "hosts": [ "mn02.vagrant" ]
       },
     "mn03": [ "mn03.vagrant" ],
+    "ambariserver": [ "mn03.vagrant" ],
     "kdcmaster": [ "mn01.vagrant" ],
     "mysql":
       {

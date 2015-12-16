@@ -1,0 +1,17 @@
+---
+- name: include mysql grants option
+  include: mysql_grants.yml
+
+- name: copy ambari repo file
+  copy: src=repo_files/ambari-{{ ambari_version }}.repo dest=/etc/yum.repos.d/ambari.repo
+  sudo: yes
+
+- name: install ambari-server
+  yum: name=ambari-server state=present
+  sudo: yes
+
+- name: include ambari ddl run
+  include: ambari_ddl.yml
+
+- name: include ambari setup and start
+  include: ambari_setup_start.yml

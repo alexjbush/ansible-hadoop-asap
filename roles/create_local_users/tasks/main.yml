@@ -1,0 +1,18 @@
+---
+- name: include vars for users
+  include_vars: vars/users.yml
+
+- name: create local linux users
+  user: name="{{ item.username }}" password="{{ item.password|password_hash('sha512') }}" uid="{{ item.uid }}" group=users update_password=always
+  sudo: yes
+  with_items: users
+
+- name: allow login over ssh for users
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication.*" line="PasswordAuthentication yes"
+  sudo: yes
+  register: sshconf
+
+- name: restart sshd
+  service: name=sshd state=restarted
+  sudo: yes
+  when: "sshconf.changed"

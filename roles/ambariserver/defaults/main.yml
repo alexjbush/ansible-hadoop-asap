@@ -1,0 +1,5 @@
+---
+java_home: "/usr/java/default"
+ambari_resource_folder: "/var/lib/ambari-server/resources/"
+ambari_drop_ddl_file: "Ambari-DDL-MySQL-DROP.sql"
+ambari_create_ddl_file: "Ambari-DDL-MySQL-CREATE.sql"

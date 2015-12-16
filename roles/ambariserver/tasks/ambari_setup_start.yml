@@ -1,0 +1,73 @@
+---
+- name: create java directory
+  file: path=/usr/share/java/ state=directory
+  sudo: yes
+
+- name: check if connector jar exists
+  stat: path="/usr/share/java/mysql-connector-java-{{ mysql_connector_version }}-bin.jar"
+  register: connector
+
+- name: download mysql connector
+  get_url: url="http://cdn.mysql.com/Downloads/Connector-J/mysql-connector-java-{{ mysql_connector_version }}.tar.gz" dest="/tmp/mysql-connector-java-{{ mysql_connector_version }}.tar.gz"
+  when: not connector.stat.exists
+
+- name: unpack the connector
+  unarchive: src="/tmp/mysql-connector-java-{{ mysql_connector_version }}.tar.gz" dest=/tmp/ copy=no 
+  when: not connector.stat.exists
+
+- name: copy connector jar file
+  command: cp "/tmp/mysql-connector-java-{{ mysql_connector_version }}/mysql-connector-java-{{ mysql_connector_version }}-bin.jar" "/usr/share/java/mysql-connector-java-{{ mysql_connector_version }}-bin.jar"
+  when: not connector.stat.exists
+  sudo: yes
+
+- name: create link to connector
+  file: src="/usr/share/java/mysql-connector-java-{{ mysql_connector_version }}-bin.jar" dest=/usr/share/java/mysql-connector-java.jar state=link
+  when: not connector.stat.exists
+  sudo: yes
+
+- name: remove jar tars and dirs
+  file: path="{{ item }}" state=absent
+  with_items:
+    - "/tmp/mysql-connector-java-{{ mysql_connector_version }}.tar.gz"
+    - "/tmp/mysql-connector-java-{{ mysql_connector_version }}/"
+  when: not connector.stat.exists
+
+- name: ambari server setup
+  shell: >
+    ambari-server setup -s -j "{{ java_home }}" --database=mysql --databasehost="{{ groups[cluster_name+'_mysql'][0] }}"
+    --databaseport={{ mysql_port }} --databasename={{ mysql_ambari_database }}
+    --databaseusername={{ mysql_ambari_user }} --databasepassword={{ mysql_ambari_password }}
+  args:
+    creates: /etc/ambari-server/conf/setup_complete.ansible
+  sudo: yes
+  register: ambari_server_setup
+
+- name: create marker for ambari setup
+  file: path=/etc/ambari-server/conf/setup_complete.ansible state=touch
+  when: ambari_server_setup.changed
+  sudo: yes
+
+- name: ambari server setup for conenctor
+  command: ambari-server setup --jdbc-db=mysql --jdbc-driver=/usr/share/java/mysql-connector-java.jar
+  args:
+    creates: /etc/ambari-server/conf/mysql_setup_complete.ansible
+  sudo: yes
+  register: ambari_server_mysql_setup
+
+- name: set cluster names fact
+  blueprints: action=get_cluster_names ignore_get_error=true
+  register: cluster_names_bp
+
+- name: create marker for ambari mysql setup
+  file: path=/etc/ambari-server/conf/mysql_setup_complete.ansible state=touch
+  when: ambari_server_mysql_setup.changed
+  sudo: yes
+
+- name: start ambari server
+  service: name=ambari-server state=started
+  sudo: yes
+
+- name: restart ambari server
+  service: name=ambari-server state=restarted
+  sudo: yes
+  when: ambari_server_mysql_setup.changed or ambari_server_setup.changed

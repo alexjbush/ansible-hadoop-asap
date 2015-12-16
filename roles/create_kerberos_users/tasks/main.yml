@@ -1,0 +1,11 @@
+---
+- name: include vars for users
+  include_vars: vars/users.yml
+
+- name: create kerberos principals for users
+  shell: kadmin.local -q "addprinc -pw {{ item.password }} {{ item.username }}"
+  sudo: yes
+  register: kadminuser
+  with_items: users
+  changed_when: "'created' in kadminuser.stdout"
+

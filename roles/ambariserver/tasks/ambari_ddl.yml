@@ -1,0 +1,36 @@
+---
+- name: test is ddl has been applied
+  shell: mysql -e "show tables" "{{ mysql_ambari_database }}" | wc -l
+  sudo: yes
+  delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
+  changed_when: no
+  register: ddl_ran
+
+- name: create directory structure for ddl
+  file: path="{{ ambari_resource_folder }}" state=directory
+  delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
+  when: "ddl_ran.stdout == '0'"
+  sudo: yes
+
+- name: copy ambari create ddl to local tmp
+  fetch: src={{ ambari_resource_folder }}/{{ ambari_create_ddl_file }} dest=/tmp/{{ ambari_create_ddl_file }}.tmp flat=yes fail_on_missing=yes
+  when: "ddl_ran.stdout == '0'"
+
+- name: copy ambari ddl to mysql server
+  copy: src=/tmp/{{ ambari_create_ddl_file }}.tmp dest={{ ambari_resource_folder }}/{{ ambari_create_ddl_file }}
+  delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
+  when: "ddl_ran.stdout == '0'"
+  run_once: yes
+  sudo: yes
+
+- name: run ambari create ddl
+  shell: mysql --database={{ mysql_ambari_database }} < {{ ambari_resource_folder }}/{{ ambari_create_ddl_file }}
+  delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
+  when: "ddl_ran.stdout == '0'"
+  run_once: yes
+  sudo: yes
+
+- name: remove ddl file from local
+  file: path=/tmp/{{ ambari_create_ddl_file }}.tmp state=absent
+  delegate_to: 127.0.0.1
+  when: "ddl_ran.stdout == '0'"

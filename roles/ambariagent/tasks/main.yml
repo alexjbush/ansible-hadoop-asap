@@ -1,0 +1,18 @@
+---
+- name: copy ambari repo file
+  copy: src=repo_files/ambari-{{ ambari_version }}.repo dest=/etc/yum.repos.d/ambari.repo
+  sudo: yes
+
+- name: Install yum packages for agent
+  yum: name=ambari-agent state=present
+  sudo: yes
+
+- name: modify ambari agent config file for hostname
+  lineinfile: dest=/etc/ambari-agent/conf/ambari-agent.ini regexp='^hostname=' line="hostname={{ groups[cluster_name+'_ambariserver'][0] }}" backup=yes
+  sudo: yes
+  register: agentconfig
+
+- name: start ambari agent
+  service: name=ambari-agent state=restarted
+  sudo: yes
+  when: agentconfig.changed
