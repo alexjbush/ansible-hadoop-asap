@@ -1,8 +1,11 @@
 # -*- mode: ruby -*-
 
 # vi: set ft=ruby :
+
 require 'open3'
 require 'json'
+
+#Load dynamic inventory file
 stdin, stdout, stderr, wait_thr = Open3.popen3('python inventories/inventory.py --vagrant')
 output = stdout.gets(nil)
 stdout.close
@@ -15,6 +18,7 @@ if exit_code != 0
 end
 boxes = JSON.parse(output)
 
+#Vagrant configuration
 Vagrant.configure(2) do |config|
 
   config.vm.box = "puppetlabs/centos-6.6-64-nocm"
@@ -34,6 +38,9 @@ Vagrant.configure(2) do |config|
       config.vm.provider "virtualbox" do |v|
         v.customize ["modifyvm", :id, "--memory", opts["mem"]]
         v.customize ["modifyvm", :id, "--cpus", opts["cpu"]]
+        v.customize ["modifyvm", :id, "--ioapic", "on"]
+        v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+        v.customize ["modifyvm", :id, "--nicpromisc1", "allow-all"]
       end
 
       config.vm.network :private_network, ip: opts["ip"]

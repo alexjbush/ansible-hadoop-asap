@@ -1,0 +1,5 @@
+---
+- name: ambari blueprint creation
+  hosts: ambariserver:&{{ cluster_name }}
+  roles:
+    - ambariblueprint

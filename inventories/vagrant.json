@@ -4,21 +4,28 @@
     "mn01.vagrant":
     {
       "ip": "192.168.205.10",
-      "mem": "1024",
+      "mem": "2048",
       "cluster_name": "vagrantcluster",
-      "cpu": "1" 
+      "cpu": "2" 
     },
     "mn02.vagrant":
     {
       "ip": "192.168.205.11",
-      "mem": "1024",
+      "mem": "2048",
       "cluster_name": "vagrantcluster",
-      "cpu": "1" 
+      "cpu": "2" 
     },
     "mn03.vagrant":
     {
       "ip": "192.168.205.12",
       "mem": "2048",
+      "cluster_name": "vagrantcluster",
+      "cpu": "2" 
+    },
+    "dn01.vagrant":
+    {
+      "ip": "192.168.205.13",
+      "mem": "1024",
       "cluster_name": "vagrantcluster",
       "cpu": "1" 
     }
@@ -40,6 +47,7 @@
     "mn03": [ "mn03.vagrant" ],
     "ambariserver": [ "mn03.vagrant" ],
     "kdcmaster": [ "mn01.vagrant" ],
+    "datanode": [ "dn01.vagrant" ],
     "mysql":
       {
         "hosts": [ "mn03.vagrant" ]

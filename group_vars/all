@@ -9,3 +9,7 @@ java_subversion: 75
 ambari_version: 2.1.2
 mysql_connector_version: 5.1.37
 mysql_port: 3306
+hdp_stack: 2.3
+blueprint_file: bare_cluster.bp.j2
+cluster_definition_file: bare_cluster.ct.j2
+blueprint_services: "HDFS,HIVE,MAPREDUCE2,PIG,SQOOP,TEZ,YARN,ZOOKEEPER"

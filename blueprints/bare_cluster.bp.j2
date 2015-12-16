@@ -1,0 +1,292 @@
+{
+   "configurations": [
+        {
+            "hive-env": {
+                "properties": {
+                    "hive_database": "Existing MySQL Database"
+                }
+            }
+        },
+        {
+            "ams-site": {
+                "properties": {
+                }
+            }
+        },
+        {
+            "core-site": {
+                "properties": {
+                    "hadoop.proxyuser.hive.groups": "*",
+                    "hadoop.proxyuser.hdfs.groups": "*",
+                    "hadoop.proxyuser.hcat.hosts": "{{ groups[cluster_name+'_mn03'][0] }}",
+                    "hadoop.proxyuser.hdfs.hosts": "*",
+                    "hadoop.proxyuser.hive.hosts": "{{ groups[cluster_name+'_mn03'][0] }}"
+                }
+            }
+        },
+        {
+            "hive-site": {
+                "properties": {
+                    "hive.enforce.bucketing": "false",
+                    "javax.jdo.option.ConnectionURL": "jdbc:mysql://{{ groups[cluster_name+'_mn03'][0] }}/hive?createDatabaseIfNotExist=true"
+                }
+            }
+        },
+        {
+            "yarn-env": {
+                "properties": {
+                    "min_user_id": "1000"
+                }
+            }
+        },
+        {
+            "tez-site": {
+                "properties": {
+                }
+            }
+        },
+        {
+            "mapred-site": {
+                "properties": {
+                }
+            }
+        },
+        {
+            "yarn-site": {
+                "properties": {
+                }
+            }
+        },
+        {
+            "zoo.cfg": {
+                "properties": {
+                }
+            }
+        },
+        {
+            "hadoop-env": {
+                "properties": {
+                }
+            }
+        },
+        {
+            "ams-env": {
+                "properties": {
+                }
+            }
+        },
+        {
+            "hdfs-site": {
+                "properties": {
+                }
+            }
+        },
+        {
+            "ams-hbase-site": {
+                "properties": {
+                }
+            }
+        }
+    ],
+  "Blueprints" : {
+    "stack_name" : "HDP",
+    "stack_version" : "{{ hdp_stack }}"
+  },
+   "host_groups" : [
+    {
+      "name" : "mn03",
+      "configurations" : [ ],
+      "components" : [
+        {
+          "name" : "ZOOKEEPER_SERVER"
+        },
+        {
+          "name" : "ZOOKEEPER_CLIENT"
+        },
+        {
+          "name" : "PIG"
+        },
+        {
+          "name" : "HIVE_SERVER"
+        },
+        {
+          "name" : "HCAT"
+        },
+        {
+          "name" : "METRICS_MONITOR"
+        },
+        {
+          "name" : "TEZ_CLIENT"
+        },
+        {
+          "name" : "HIVE_METASTORE"
+        },
+        {
+          "name" : "AMBARI_SERVER"
+        },
+        {
+          "name" : "SQOOP"
+        },
+        {
+          "name" : "HIVE_CLIENT"
+        },
+        {
+          "name" : "HDFS_CLIENT"
+        },
+        {
+          "name" : "YARN_CLIENT"
+        },
+        {
+          "name" : "METRICS_COLLECTOR"
+        },
+        {
+          "name" : "MAPREDUCE2_CLIENT"
+        },
+        {
+          "name" : "WEBHCAT_SERVER"
+        }
+      ],
+      "cardinality" : "1"
+    },
+    {
+      "name" : "datanode",
+      "configurations" : [ ],
+      "components" : [
+        {
+          "name" : "NODEMANAGER"
+        },
+        {
+          "name" : "METRICS_MONITOR"
+        },
+        {
+          "name" : "DATANODE"
+        }
+      ]
+    },
+    {
+      "name" : "mn01",
+      "configurations" : [ ],
+      "components" : [
+        {
+          "name" : "ZOOKEEPER_SERVER"
+        },
+        {
+          "name" : "ZOOKEEPER_CLIENT"
+        },
+        {
+          "name" : "PIG"
+        },
+        {
+          "name" : "NAMENODE"
+        },
+        {
+          "name" : "HCAT"
+        },
+        {
+          "name" : "METRICS_MONITOR"
+        },
+        {
+          "name" : "TEZ_CLIENT"
+        },
+        {
+          "name" : "SQOOP"
+        },
+        {
+          "name" : "HIVE_CLIENT"
+        },
+        {
+          "name" : "HDFS_CLIENT"
+        },
+        {
+          "name" : "YARN_CLIENT"
+        },
+        {
+          "name" : "MAPREDUCE2_CLIENT"
+        },
+        {
+          "name" : "RESOURCEMANAGER"
+        }
+      ],
+      "cardinality" : "1"
+    },
+    {
+      "name" : "jobserver",
+      "configurations" : [ ],
+      "components" : [
+        {
+          "name" : "ZOOKEEPER_CLIENT"
+        },
+        {
+          "name" : "METRICS_MONITOR"
+        },
+        {
+          "name" : "TEZ_CLIENT"
+        },
+        {
+          "name" : "SQOOP"
+        },
+        {
+          "name" : "HIVE_CLIENT"
+        },
+        {
+          "name" : "HDFS_CLIENT"
+        },
+        {
+          "name" : "YARN_CLIENT"
+        },
+        {
+          "name" : "MAPREDUCE2_CLIENT"
+        }
+      ]
+    },
+    {
+      "name" : "mn02",
+      "configurations" : [ ],
+      "components" : [
+        {
+          "name" : "ZOOKEEPER_SERVER"
+        },
+        {
+          "name" : "ZOOKEEPER_CLIENT"
+        },
+        {
+          "name" : "PIG"
+        },
+        {
+          "name" : "HISTORYSERVER"
+        },
+        {
+          "name" : "HCAT"
+        },
+        {
+          "name" : "METRICS_MONITOR"
+        },
+        {
+          "name" : "SECONDARY_NAMENODE"
+        },
+        {
+          "name" : "TEZ_CLIENT"
+        },
+        {
+          "name" : "APP_TIMELINE_SERVER"
+        },
+        {
+          "name" : "SQOOP"
+        },
+        {
+          "name" : "HIVE_CLIENT"
+        },
+        {
+          "name" : "HDFS_CLIENT"
+        },
+        {
+          "name" : "YARN_CLIENT"
+        },
+        {
+          "name" : "MAPREDUCE2_CLIENT"
+        }
+      ],
+      "cardinality" : "1"
+    }
+  ]
+}

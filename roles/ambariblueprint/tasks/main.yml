@@ -1,0 +1,48 @@
+---
+- name: create blueprint folder
+  file: path={{ blueprint_folder }} state=directory
+  sudo: yes
+
+- name: copy blueprint to ambari server
+  template: src=blueprints/{{ blueprint_file }} dest={{ blueprint_folder }}/{{ cluster_name }}_blueprint.json backup=yes
+  sudo: yes
+
+- name: wait for ambari api to be ready
+  blueprints: action=wait_for_ambari_api
+  register: apiwait
+
+- name: wait for hosts to be registered in ambari
+  blueprints: action=wait_for_registered_hosts hosts="{{ groups[cluster_name]|join(',') }}"
+  register: registerhosts
+
+- name: post blueprint to ambari
+  blueprints: >
+        action=post_blueprint path={{ blueprint_folder }}/{{ cluster_name }}_blueprint.json blueprint_name="{{ cluster_name }}"
+        stack_recommendations=yes stack_version="{{ hdp_stack }}" hosts="{{ groups[cluster_name]|join(',') }}"
+        stack_services="{{ blueprint_services }}"
+  register: blueprint_post
+
+- name: get blueprint from ambari
+  blueprints: action=get_blueprint blueprint_name="{{ cluster_name }}"
+
+- name: record blueprint
+  copy: content="{{ blueprint }}" dest={{ blueprint_folder }}/{{ cluster_name }}_blueprint.sent.json backup=yes
+  sudo: yes
+  changed_when: no
+
+- name: get list of clusters
+  blueprints: action=get_cluster_names
+  register: bp_cluster_names
+
+- name: copy cluster creation template to ambari server
+  template: src=blueprints/{{ cluster_definition_file }} dest={{ blueprint_folder }}/{{ cluster_name }}_cluster.json backup=yes
+  sudo: yes
+
+- name: post cluster to ambari
+  blueprints: >
+        action=post_cluster path={{ blueprint_folder }}/{{ cluster_name }}_cluster.json cluster_name="{{ cluster_name }}" wait_for_build=yes
+  register: cluster_post
+
+- name: set cluster names fact
+  blueprints: action=get_cluster_names
+  ignore_errors: yes

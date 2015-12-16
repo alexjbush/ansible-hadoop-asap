@@ -1,0 +1,10 @@
+---
+- include: pb_provision_env.yml
+
+- include: pb_create_mit_kdc.yml
+
+- include: pb_create_users.yml
+
+- include: pb_ambari_setup.yml
+
+- include: pb_ambari_blueprint_cluster.yml

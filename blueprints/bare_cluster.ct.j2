@@ -1,0 +1,54 @@
+{
+  "blueprint" : "{{ cluster_name }}",
+  "configurations" : [
+    {
+      "oozie-site" : {
+        "oozie.service.JPAService.jdbc.password" : "{{ mysql_oozie_password }}"
+      }
+    },
+    {
+      "hive-site" : {
+        "javax.jdo.option.ConnectionPassword" : "{{ mysql_hive_password }}"
+      }
+    }
+  ],
+  "host_groups" :[
+    {
+      "name" : "mn01", 
+      "hosts" : [         
+        {
+          "fqdn" : "{{ groups[cluster_name+'_mn01'][0] }}"
+        }
+      ]
+    },
+    {
+      "name" : "mn02", 
+      "hosts" : [         
+        {
+          "fqdn" : "{{ groups[cluster_name+'_mn02'][0] }}"
+        }
+      ]
+    },
+    {
+      "name" : "mn03", 
+      "hosts" : [         
+        {
+          "fqdn" : "{{ groups[cluster_name+'_mn03'][0] }}"
+        }
+      ]
+    },
+    {
+      "name" : "datanode", 
+      "hosts" : [         
+          {% for host in groups[cluster_name+'_datanode'] %}
+        {
+          "fqdn" : "{{ host }}"
+        }
+          {% if not loop.last %}
+          ,
+          {% endif %}
+          {% endfor %}
+      ]
+    }
+  ]
+}
