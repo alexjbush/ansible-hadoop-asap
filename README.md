@@ -15,7 +15,7 @@ Alternatively, you can use one of the instance creation methods below and use an
 #### Creating instances
 
 ###### Vagrant
-To you these scripts with Vagrant, change directory into [inventories/vagrant](inventories/vagrant), modify the [vagrant.json](inventories/vagrant/vagrant.json) file to your liking and run `vagrant up`. Make sure the hostnames are resolvable from the ansible host (hint: place entries in /etc/hosts).
+To use these scripts with Vagrant, change directory into [inventories/vagrant](inventories/vagrant), modify the [vagrant.json](inventories/vagrant/vagrant.json) file to your liking and run `vagrant up`. Make sure the hostnames are resolvable from the ansible host (hint: place entries in /etc/hosts).
 
 #### Configuration
 Most configuration is done through the [group_vars](group_vars) files.
