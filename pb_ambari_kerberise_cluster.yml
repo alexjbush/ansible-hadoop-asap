@@ -1,0 +1,5 @@
+---
+- name: kerberise this cluster
+  hosts: ambariserver:&{{ cluster_name }}
+  roles:
+    - kerberisecluster

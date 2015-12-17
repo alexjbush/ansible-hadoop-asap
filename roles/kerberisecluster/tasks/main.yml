@@ -1,0 +1,57 @@
+---
+- name: include kdc config vars
+  include_vars: vars/kdc_config
+
+- name: post service to cluster
+  kerberise: action=get_security_type cluster_name="{{ cluster_name }}"
+  register: test_kerb
+
+- name: post service to cluster
+  kerberise: action=1_add_service cluster_name="{{ cluster_name }}"
+  register: step1
+  when: 'cluster_security == "NONE"'
+
+- name: post service component to cluster
+  kerberise: action=2_add_service_component cluster_name="{{ cluster_name }}"
+  register: step2
+  when: 'cluster_security == "NONE"'
+
+- name: create config folder
+  file: path={{ config_folder }} state=directory
+  sudo: yes
+  when: 'cluster_security == "NONE"'
+
+- name: copy config to ambari server
+  template: src=desired_config.j2 dest={{ config_folder }}/{{ cluster_name }}_desired_configs.json backup=yes
+  sudo: yes
+  when: 'cluster_security == "NONE"'
+
+- name: post config to cluster
+  kerberise: action=3_post_config cluster_name="{{ cluster_name }}" config_path="{{ config_folder }}/{{ cluster_name }}_desired_configs.json"
+  register: step3
+  when: 'cluster_security == "NONE"'
+
+- name: post hosts components
+  kerberise: action=4_post_hosts_component cluster_name="{{ cluster_name }}" hosts="{{ groups[cluster_name]|join(',') }}"
+  register: step4
+  when: 'cluster_security == "NONE"'
+
+- name: install kerberos service
+  kerberise: action=5_install_kerberos_service cluster_name="{{ cluster_name }}" wait=yes
+  register: step5
+  when: 'cluster_security == "NONE"'
+
+- name: stop all services
+  kerberise: action=6_stop_all_services cluster_name="{{ cluster_name }}" wait=yes
+  register: step6
+  when: 'cluster_security == "NONE"'
+
+- name: enable kerberos
+  kerberise: action=7_enable_kerberos cluster_name="{{ cluster_name }}" kdc_admin_principal="{{ kdc_admin_username }}/admin" kdc_admin_password="{{ kdc_admin_password }}" wait=yes
+  register: step7
+  when: 'cluster_security == "NONE"'
+
+- name: start all services
+  kerberise: action=8_start_all_services cluster_name="{{ cluster_name }}" wait=yes
+  register: step8
+  when: 'cluster_security == "NONE"'
