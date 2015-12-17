@@ -13,3 +13,5 @@ hdp_stack: 2.3
 blueprint_file: bare_cluster.bp.j2
 cluster_definition_file: bare_cluster.ct.j2
 blueprint_services: "HDFS,HIVE,MAPREDUCE2,PIG,SQOOP,TEZ,YARN,ZOOKEEPER"
+#Whether to use Ambari Stack recommendations API
+use_ambari_recommendations: yes

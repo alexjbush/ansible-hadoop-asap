@@ -18,7 +18,7 @@
 - name: post blueprint to ambari
   blueprints: >
         action=post_blueprint path={{ blueprint_folder }}/{{ cluster_name }}_blueprint.json blueprint_name="{{ cluster_name }}"
-        stack_recommendations=yes stack_version="{{ hdp_stack }}" hosts="{{ groups[cluster_name]|join(',') }}"
+        stack_recommendations="{{ use_ambari_recommendations }}" stack_version="{{ hdp_stack }}" hosts="{{ groups[cluster_name]|join(',') }}"
         stack_services="{{ blueprint_services }}"
   register: blueprint_post
 
