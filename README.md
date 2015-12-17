@@ -10,10 +10,12 @@ The inventory file is expected in be in a format similar to the example: [exampl
 
 All hosts must be in a _clustername_ group, in the appropriate _services_ group and a _clustername_service_ group.
 
-#### Creating instances
-These scripts currently support creating Vagrant instances to run the Playbook against.
+Alternatively, you can use one of the instance creation methods below and use an included dynamic inventory (e.g. [inventory.py](inventories/vagrant/inventory.py)).
 
-To do this change directory into [inventories/vagrant](inventories/vagrant), modify the [vagrant.json](inventories/vagrant/vagrant.json) file to your liking and run `vagrant up`. Make sure the hostnames are resolvable from the ansible host (hint: place entries in /etc/hosts).
+#### Creating instances
+
+###### Vagrant
+To you these scripts with Vagrant, change directory into [inventories/vagrant](inventories/vagrant), modify the [vagrant.json](inventories/vagrant/vagrant.json) file to your liking and run `vagrant up`. Make sure the hostnames are resolvable from the ansible host (hint: place entries in /etc/hosts).
 
 #### Configuration
 Most configuration is done through the [group_vars](group_vars) files.
