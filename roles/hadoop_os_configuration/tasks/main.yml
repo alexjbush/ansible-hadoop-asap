@@ -1,4 +1,12 @@
 ---
+- name: install ntp
+  yum: name=ntp state=installed
+  sudo: yes
+
+- name: start ntpd
+  service: name=ntpd state=started
+  sudo: yes
+
 - name: stop iptables
   service: name={{ item }} state=stopped
   sudo: yes

@@ -37,7 +37,7 @@ ansible-playbook -i inventories/vagrant/inventory.py pb_provision_cluster.yml -e
 - [ ] AWS support
 - [ ] OpenStack support
 - [ ] Azure support
-- [ ] NTP
+- [x] NTP
 
 
 ## [License](LICENSE)
