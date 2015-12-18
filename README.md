@@ -27,10 +27,13 @@ For now, users can be configured in the [vars/users.yml](vars/users.yml) file an
 ansible-playbook -i inventories/vagrant/inventory.py pb_provision_cluster.yml -e 'cluster_name=vagrantcluster'
 ```
 
+#### Notes
+Currently, users are managed in an OpenLDAP server and their credentials are stored in an MIT KDC. Unix authentication is done by SSSD using KDC5.
+
 ## TO DO
 - [ ] Build blueprints dynamically (j2) depending on services requested
 - [ ] FreeIPA support (alternative to MIT KDC)
-- [ ] OpenLDAP when using KDC (no local users)
+- [x] OpenLDAP when using KDC (no local users)
 - [ ] Ranger, RangerKMS, Knox and other advanced services support
 - [ ] Pull implementations in [library](library/) modules to shared Ambari python class
 - [ ] CentOS 7 support (possibly Ubuntu)
