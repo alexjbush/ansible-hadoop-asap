@@ -5,8 +5,6 @@
     dest=/etc/yum.repos.d/ambari.repo
   sudo: yes
 
-ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
-
 - name: Install yum packages for agent
   yum: name=ambari-agent state=present
   sudo: yes

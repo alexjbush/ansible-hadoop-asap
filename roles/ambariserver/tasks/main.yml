@@ -3,7 +3,9 @@
   include: mysql_grants.yml
 
 - name: copy ambari repo file
-  src=repo_files/ambari-{{ ambari_version }}.{{ ansible_distribution | lower }}.{{ ansible_distribution_major_version }}.repo
+  copy: >
+    src=repo_files/ambari-{{ ambari_version }}.{{ ansible_distribution | lower }}.{{ ansible_distribution_major_version }}.repo
+    dest=/etc/yum.repos.d/ambari.repo
   sudo: yes
 
 - name: install ambari-server
