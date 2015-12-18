@@ -20,7 +20,7 @@
   shell: >
     authconfig --enablesssd --enablesssdauth --enablelocauthorize --enableldap --enablekrb5
     --ldapserver=ldap://{{ groups[cluster_name+'_openldap'][0] }}:389 --disableldaptls
-    --ldapbasedn={{ olcSuffix }} --enablerfc2307bis --enablemkhomedir --enablecachecreds --update
+    --ldapbasedn={{ olcSuffix }} --enablemkhomedir --enablecachecreds --update
     --krb5kdc={{ groups[cluster_name+'_kdcmaster'][0] }} --krb5adminserver={{ groups[cluster_name+'_kdcmaster'][0] }}
     --krb5realm={{ krb_realm }}
   args:
@@ -28,7 +28,17 @@
   sudo: yes
   register: authconf
 
+- name: change schema version
+  lineinfile: dest=/etc/sssd/sssd.conf regexp='^ldap_schema' line='ldap_schema = rfc2307'
+  sudo: yes
+  register: schemachange
+
+- name: remove cache db file
+  file: path=/var/lib/sss/db/cache_default.ldb state=absent
+  sudo: yes
+  when: authconf.changed or schemachange.changed
+
 - name: restart sssd for changes to come into effect
   service: name=sssd state=restarted enabled=yes
-  when: authconf.changed
+  when: authconf.changed or schemachange.changed
   sudo: yes
