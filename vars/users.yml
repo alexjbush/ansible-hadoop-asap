@@ -10,6 +10,7 @@ users:
     password: test_user
     cn: Test User1
     sn: User1
+    uid: 50002
     gid: 100
 
 user_groups:
