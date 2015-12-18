@@ -13,6 +13,6 @@
   register: agentconfig
 
 - name: start ambari agent
-  service: name=ambari-agent state=restarted
+  service: name=ambari-agent state=restarted enabled=yes
   sudo: yes
   when: agentconfig.changed

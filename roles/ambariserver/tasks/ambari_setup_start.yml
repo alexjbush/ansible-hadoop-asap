@@ -64,7 +64,7 @@
   sudo: yes
 
 - name: start ambari server
-  service: name=ambari-server state=started
+  service: name=ambari-server state=started enabled=yes
   sudo: yes
 
 - name: restart ambari server

@@ -37,11 +37,11 @@
   when: "not kdc_check.stat.exists"
 
 - name: start krb5kdc
-  service: name=krb5kdc state=started
+  service: name=krb5kdc state=started enabled=yes
   sudo: yes
 
 - name: start kadmin
-  service: name=kadmin state=started
+  service: name=kadmin state=started enabled=yes
   sudo: yes
 
 - name: create admin principal

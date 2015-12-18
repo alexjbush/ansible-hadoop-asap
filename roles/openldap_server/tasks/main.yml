@@ -40,7 +40,7 @@
   sudo: yes
 
 - name: start slapd service
-  service: name=slapd state=started
+  service: name=slapd state=started enabled=yes
   sudo: yes
 
 - name: make config folder

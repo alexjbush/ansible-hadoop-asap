@@ -29,6 +29,6 @@
   register: authconf
 
 - name: restart sssd for changes to come into effect
-  service: name=sssd state=restarted
+  service: name=sssd state=restarted enabled=yes
   when: authconf.changed
   sudo: yes

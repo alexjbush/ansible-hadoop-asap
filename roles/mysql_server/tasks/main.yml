@@ -3,7 +3,7 @@
   sudo: yes
 
 - name: start mysql
-  service: name=mysqld state=started
+  service: name=mysqld state=started enabled=yes
   sudo: yes
 
 - name: checkconfig mysql test
