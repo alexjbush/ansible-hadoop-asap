@@ -1,3 +1,8 @@
+- name: install mysql community release package
+  yum: name="{{ mysql_community_7_url }}" state=present
+  sudo: yes
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
 - name: install mysql
   yum: name=mysql-server state=present
   sudo: yes

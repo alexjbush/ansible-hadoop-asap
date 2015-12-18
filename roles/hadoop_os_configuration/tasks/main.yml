@@ -8,11 +8,17 @@
   sudo: yes
 
 - name: stop iptables
-  service: name={{ item }} state=stopped
+  service: name={{ item }} state=stopped enabled=no
   sudo: yes
   with_items:
     - iptables
     - ip6tables
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+
+- name: stop firewalld
+  service: name=firewalld state=stopped enabled=no
+  sudo: yes
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
 
 - name: include task for page files
   include: page_files.yml

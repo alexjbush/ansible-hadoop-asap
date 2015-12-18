@@ -21,7 +21,8 @@ boxes = JSON.parse(output)
 #Vagrant configuration
 Vagrant.configure(2) do |config|
 
-  config.vm.box = "puppetlabs/centos-6.6-64-nocm"
+  #config.vm.box = "puppetlabs/centos-6.6-64-nocm"
+  config.vm.box = "puppetlabs/centos-7.0-64-nocm"
 
   # Turn off shared folders
   config.vm.synced_folder ".", "/vagrant", id: "vagrant-root", disabled: true

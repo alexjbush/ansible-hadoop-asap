@@ -1,7 +1,11 @@
 ---
 - name: copy ambari repo file
-  copy: src=repo_files/ambari-{{ ambari_version }}.repo dest=/etc/yum.repos.d/ambari.repo
+  copy: >
+    src=repo_files/ambari-{{ ambari_version }}.{{ ansible_distribution | lower }}.{{ ansible_distribution_major_version }}.repo
+    dest=/etc/yum.repos.d/ambari.repo
   sudo: yes
+
+ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
 
 - name: Install yum packages for agent
   yum: name=ambari-agent state=present
