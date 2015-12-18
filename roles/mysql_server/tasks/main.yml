@@ -11,17 +11,6 @@
   service: name=mysqld state=started enabled=yes
   sudo: yes
 
-- name: checkconfig mysql test
-  shell: /sbin/chkconfig --list mysqld | grep on
-  register: chkconfig
-  failed_when: chkconfig.rc > 1
-  changed_when: no
-
-- name: checkconfig mysql on
-  shell: /sbin/chkconfig mysqld on
-  when: "chkconfig.rc == 1"
-  sudo: yes
-
 - name: check to see if mysql python is installed
   command: pip show mysql-python
   register: mysql_python_check

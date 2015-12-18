@@ -15,9 +15,13 @@
   changed_when: no
   register: slappd_hash
 
+- name: set database file when centos 7
+  set_fact: olc_database_file="{{ olc_database_file_cent7 }}"
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
 - name: change olcdb bdb file
   lineinfile: >
-    dest='/etc/openldap/slapd.d/cn=config/olcDatabase={2}bdb.ldif'
+    dest="{{ olc_database_file }}"
     regexp="{{ item.linestart }}" line="{{ item.line }}"
   sudo: yes
   with_items:
