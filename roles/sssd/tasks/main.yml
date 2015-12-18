@@ -1,0 +1,34 @@
+---
+- name: include ldap config
+  include_vars: vars/ldap_config
+
+- name: install required packages for sssd
+  yum: name="{{ item }}" state=present
+  sudo: yes
+  with_items:
+    - sssd-client
+    - sssd-common
+    - sssd-common-pac
+    - sssd-krb5
+    - sssd-ldap
+    - sssd-proxy
+    - python-sssdconfig
+    - authconfig
+    - authconfig-gtk
+
+- name: run authconfig to configure sssd
+  shell: >
+    authconfig --enablesssd --enablesssdauth --enablelocauthorize --enableldap --enablekrb5
+    --ldapserver=ldap://{{ groups[cluster_name+'_openldap'][0] }}:389 --disableldaptls
+    --ldapbasedn={{ olcSuffix }} --enablerfc2307bis --enablemkhomedir --enablecachecreds --update
+    --krb5kdc={{ groups[cluster_name+'_kdcmaster'][0] }} --krb5adminserver={{ groups[cluster_name+'_kdcmaster'][0] }}
+    --krb5realm={{ krb_realm }}
+  args:
+    creates: /etc/sssd/sssd.conf
+  sudo: yes
+  register: authconf
+
+- name: restart sssd for changes to come into effect
+  service: name=sssd state=restarted
+  when: authconf.changed
+  sudo: yes

@@ -1,0 +1,12 @@
+{% for grp in user_groups %}
+
+dn: cn={{ grp.cn }},ou={{ ldap_ou }},{{ olcSuffix }}
+cn: {{ grp.cn }}
+gidnumber: {{ grp.gid }}
+{% for user in grp.users %}
+memberuid: {{ user }}
+{% endfor %}
+objectclass: posixGroup
+objectclass: top
+
+{% endfor %}

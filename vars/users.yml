@@ -2,4 +2,18 @@
 users:
   - username: test_user
     password: test_user
+    cn: Test User
+    sn: User
     uid: 50001
+    gid: 100
+  - username: test_user1
+    password: test_user
+    cn: Test User1
+    sn: User1
+    gid: 100
+
+user_groups:
+  - cn: access1
+    gid: 100001
+    users:
+      - test_user1

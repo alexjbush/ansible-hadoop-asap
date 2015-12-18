@@ -1,0 +1,5 @@
+---
+- name: create openldap server
+  hosts: openldap:&{{ cluster_name }}
+  roles:
+    - openldap_server

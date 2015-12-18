@@ -1,0 +1,7 @@
+---
+ldap_dc: hadoop
+ldap_o: "{{ ldap_dc }}"
+ldap_root_pass: "openldap"
+olcSuffix: dc={{ ldap_dc }},dc=test
+olcRootDN: "dc=Manager,{{ olcSuffix }}"
+ldap_ou: Users

@@ -1,0 +1,14 @@
+{% for user in users %}
+
+dn: cn={{ user.cn }},ou={{ ldap_ou }},{{ olcSuffix }}
+cn: {{ user.cn }}
+sn: {{ user.sn }}
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: {{ user.username }}
+uidNumber: {{ user.uid }}
+gidNumber: {{ user.gid }}
+homeDirectory: /home/{{ user.username }}/
+loginshell: /bin/bash
+
+{% endfor %}

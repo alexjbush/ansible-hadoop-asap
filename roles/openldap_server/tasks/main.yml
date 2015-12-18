@@ -1,0 +1,63 @@
+---
+- name: include ldap config
+  include_vars: vars/ldap_config
+
+- name: include user config
+  include_vars: vars/users.yml
+
+- name: install server and clients
+  yum: name=openldap,openldap-clients,openldap-servers state=present
+  sudo: yes
+  register: ldap_installed
+
+- name: get slappd password hash
+  command: /usr/sbin/slappasswd -s "{{ ldap_root_pass }}"
+  changed_when: no
+  register: slappd_hash
+
+- name: change olcdb bdb file
+  lineinfile: >
+    dest='/etc/openldap/slapd.d/cn=config/olcDatabase={2}bdb.ldif'
+    regexp="{{ item.linestart }}" line="{{ item.line }}"
+  sudo: yes
+  with_items:
+    - linestart: '^olcRootPW:'
+      line: "olcRootPW: {{ slappd_hash.stdout }}"
+    - linestart: '^olcSuffix:'
+      line: "olcSuffix: {{ olcSuffix }}"
+    - linestart: '^olcRootDN:'
+      line: "olcRootDN: {{ olcRootDN }}"
+    - linestart: '^olcAccess: \{0\}'
+      line: 'olcAccess: {0}to attrs=userPassword by self write by dn.base="{{ olcRootDN }}" write by anonymous auth by * none'
+    - linestart: '^olcAccess: \{1\}'
+      line: 'olcAccess: {1}to * by dn.base="{{ olcRootDN }}" write by self write by * read'
+  when: ldap_installed.changed
+
+- name: change olcdb monitor file
+  replace: >
+    dest='/etc/openldap/slapd.d/cn=config/olcDatabase={1}monitor.ldif'
+    regexp='cn=manager,dc=my-domain,dc=com' replace="{{ olcRootDN }}"
+  sudo: yes
+
+- name: start slapd service
+  service: name=slapd state=started
+  sudo: yes
+
+- name: make config folder
+  file: path="{{ ldif_folder }}" state=directory owner=root group=root mode=700
+  sudo: yes
+
+- name: place over ldif files
+  template: src="{{ item }}.j2" dest="{{ ldif_folder }}/{{ item }}" owner=root group=root mode=600
+  sudo: yes
+  with_items: ldif_files
+  register: ldif_copy
+
+- name: add the ldifs to ldap
+  shell: ldapadd -f "{{ ldif_folder }}/{{ item.0 }}" -D "{{ olcRootDN }}" -w "{{ ldap_root_pass }}"
+  sudo: yes
+  with_together:
+    - ldif_files
+    - ldif_copy.results
+  when: item.1.changed
+  register: ldap_add

@@ -1,0 +1,7 @@
+---
+ldif_folder: /etc/openldap/ldif
+ldif_files:
+  - dn.ldif
+  - ou.ldif
+  - users.ldif
+  - groups.ldif

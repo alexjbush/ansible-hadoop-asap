@@ -13,3 +13,8 @@
   hosts: kdcmaster:&{{ cluster_name }}
   roles:
     - kdcmaster
+
+- name: create kerberos users
+  hosts: kdcmaster:&{{ cluster_name }}
+  roles:
+    - create_kerberos_users

@@ -47,6 +47,7 @@
     "mn03": [ "mn03.vagrant" ],
     "ambariserver": [ "mn03.vagrant" ],
     "kdcmaster": [ "mn01.vagrant" ],
+    "openldap": [ "mn01.vagrant" ],
     "datanode": [ "dn01.vagrant" ],
     "mysql":
       {

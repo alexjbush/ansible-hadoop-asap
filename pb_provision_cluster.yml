@@ -3,7 +3,9 @@
 
 - include: pb_create_mit_kdc.yml
 
-- include: pb_create_users.yml
+- include: pb_create_openldap.yml
+
+- include: pb_configure_sssd.yml
 
 - include: pb_ambari_setup.yml
 
