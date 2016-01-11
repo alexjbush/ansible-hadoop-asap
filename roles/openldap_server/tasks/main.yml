@@ -19,6 +19,7 @@
   set_fact: olc_database_file="{{ olc_database_file_cent7 }}"
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
 
+#Replace this with ldif files
 - name: change olcdb bdb file
   lineinfile: >
     dest="{{ olc_database_file }}"
@@ -50,6 +51,18 @@
 - name: make config folder
   file: path="{{ ldif_folder }}" state=directory owner=root group=root mode=700
   sudo: yes
+
+- name: load in schema ldifs
+  shell: ldapadd -Y EXTERNAL -H ldapi:// -f "{{ item }}"
+  sudo: yes
+  with_items:
+    - /etc/openldap/schema/cosine.ldif
+    - /etc/openldap/schema/nis.ldif
+    - /etc/openldap/schema/inetorgperson.ldif
+  register: schemaldif
+  ignore_errors: yes
+  failed_when: "schemaldif.rc != 0 and not 'Duplicate attributeType' in schemaldif.stderr"
+  changed_when: "not 'Duplicate attributeType' in schemaldif.stderr"
 
 - name: place over ldif files
   template: src="{{ item }}.j2" dest="{{ ldif_folder }}/{{ item }}" owner=root group=root mode=600

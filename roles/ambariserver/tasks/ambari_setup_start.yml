@@ -63,6 +63,17 @@
   when: ambari_server_mysql_setup.changed
   sudo: yes
 
+#Systemd hack
+- name: check if systemd file exists
+  stat: path=/usr/lib/systemd/system/ambari-server.service
+  when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"'
+  register: systemdstat
+
+- name: copy over systemd file
+  copy: src=ambari-server.service dest=/usr/lib/systemd/system/ambari-server.service owner=root group=root mode=644
+  sudo: yes
+  when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version == "7" and not systemdstat.stat.exists'
+
 - name: start ambari server
   service: name=ambari-server state=started enabled=yes
   sudo: yes
