@@ -3,7 +3,7 @@
 
 Ansible Playbooks to install Hortonworks Data Platform (HDP) using Ambari Blueprints. Currently the Playbooks install an MIT KDC and resulting cluster is fully kerberised.
 
-This has been tested against CentOS6 in Vagrant.
+This has been tested against CentOS6 and CentOS7 in Vagrant.
 
 ## Getting started
 The inventory file is expected in be in a format similar to the example: [example](inventories/example_inventory).
@@ -16,6 +16,8 @@ Alternatively, you can use one of the instance creation methods below and use an
 
 ###### Vagrant
 To use these scripts with Vagrant, change directory into [inventories/vagrant](inventories/vagrant), modify the [vagrant.json](inventories/vagrant/vagrant.json) file to your liking and run `vagrant up`. Make sure the hostnames are resolvable from the ansible host (hint: place entries in /etc/hosts).
+
+You can choose the Vagrant box (Cent 6 or 7) by editing [inventory.cfg](inventories/vagrant/inventory.cfg).
 
 #### Configuration
 Most configuration is done through the [group_vars](group_vars) files.
@@ -36,7 +38,7 @@ Currently, users are managed in an OpenLDAP server and their credentials are sto
 - [x] OpenLDAP when using KDC (no local users)
 - [ ] Ranger, RangerKMS, Knox and other advanced services support
 - [ ] Pull implementations in [library](library/) modules to shared Ambari python class
-- [ ] CentOS 7 support (possibly Ubuntu)
+- [x] CentOS 7 support
 - [ ] AWS support
 - [ ] OpenStack support
 - [ ] Azure support
