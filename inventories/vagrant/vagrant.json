@@ -18,7 +18,7 @@
     "mn03.vagrant":
     {
       "ip": "192.168.205.12",
-      "mem": "4096",
+      "mem": "5120",
       "cluster_name": "vagrantcluster",
       "cpu": "3" 
     },
