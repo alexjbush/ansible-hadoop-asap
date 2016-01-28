@@ -11,7 +11,8 @@
 - name: grant to ambari database
   mysql_user: >
         name="{{ mysql_ambari_user }}" password="{{ mysql_ambari_password }}"
-        priv="{{ mysql_ambari_database }}".*:ALL state=present host="{{ item }}"
+        priv="{{ mysql_ambari_database }}.*:ALL" state=present host="{{ item }}"
+        append_privs=yes
   delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
   with_items:
     - localhost
@@ -22,7 +23,8 @@
 - name: grant to hive database
   mysql_user: >
         name="{{ mysql_hive_user }}" password="{{ mysql_hive_password }}"
-        priv="{{ mysql_hive_database }}".*:ALL state=present host="{{ item }}"
+        priv="{{ mysql_hive_database }}.*:ALL" state=present host="{{ item }}"
+        append_privs=yes
   delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
   with_items:
     - localhost
@@ -33,7 +35,8 @@
 - name: grant to oozie database
   mysql_user: >
         name="{{ mysql_oozie_user }}" password="{{ mysql_oozie_password }}"
-        priv="{{ mysql_oozie_database }}".*:ALL state=present host="{{ item }}"
+        priv="{{ mysql_oozie_database }}.*:ALL" state=present host="{{ item }}"
+        append_privs=yes
   delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
   with_items:
     - localhost
