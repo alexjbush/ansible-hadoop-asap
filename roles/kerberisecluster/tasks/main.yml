@@ -1,6 +1,10 @@
 ---
-- name: include kdc config vars
+- name: include kdc config vars for kerberise play
   include_vars: vars/kdc_config
+
+- name: wait for ambari api to be ready for kerberisation
+  blueprints: action=wait_for_ambari_api
+  register: apiwait
 
 - name: post service to cluster
   kerberise: action=get_security_type cluster_name="{{ cluster_name }}"
@@ -52,6 +56,6 @@
   when: 'cluster_security == "NONE"'
 
 - name: start all services
-  kerberise: action=8_start_all_services cluster_name="{{ cluster_name }}" wait=yes
+  kerberise: action=8_start_all_services cluster_name="{{ cluster_name }}" wait=yes timeout=500
   register: step8
   when: 'cluster_security == "NONE"'

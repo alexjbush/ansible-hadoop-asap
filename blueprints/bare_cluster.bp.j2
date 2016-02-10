@@ -7,6 +7,26 @@
                 }
             }
         },
+{% if 'OOZIE' in blueprint_services %}
+        {
+            "oozie-site" : {
+                "properties" : {
+                    "oozie.service.JPAService.jdbc.driver" : "com.mysql.jdbc.Driver",
+                    "oozie.service.JPAService.jdbc.url" : "jdbc:mysql://{{ groups[cluster_name+'_mn03'][0] }}/oozie",
+                    "oozie.service.JPAService.jdbc.username" : "{{ mysql_oozie_user }}",
+                    "oozie.db.schema.name" : "{{ mysql_oozie_database }}"
+                }
+             }
+        },
+        {
+            "oozie-env" : {
+               "properties" : {
+                   "oozie_hostname" : "{{ groups[cluster_name+'_mn03'][0] }}",
+                   "oozie_database" : "Existing MySQL Database"
+                }
+            }
+        },
+{% endif %}
         {
             "ams-site": {
                 "properties": {
@@ -103,6 +123,22 @@
         {
           "name" : "ZOOKEEPER_CLIENT"
         },
+{% if 'OOZIE' in blueprint_services %}
+{% if 'FALCON' in blueprint_services %}
+        {
+          "name" : "FALCON_SERVER"
+        },
+        {
+          "name" : "FALCON_CLIENT"
+        },
+{% endif %}
+        {
+          "name" : "OOZIE_SERVER"
+        },
+        {
+          "name" : "OOZIE_CLIENT"
+        },
+{% endif %}
         {
           "name" : "PIG"
         },
@@ -158,6 +194,11 @@
         {
           "name" : "METRICS_MONITOR"
         },
+{% if 'KAFKA' in blueprint_services %}
+        {
+          "name" : "KAFKA_BROKER"
+        },
+{% endif %}
         {
           "name" : "DATANODE"
         }

@@ -8,3 +8,4 @@ mysql_hive_password: hive
 mysql_oozie_database: oozie
 mysql_oozie_user: oozie
 mysql_oozie_password: oozie
+restart_ambari_server_after_installs: true

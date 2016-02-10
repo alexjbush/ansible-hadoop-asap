@@ -224,7 +224,7 @@ def main():
 			ignore_get_error=dict(default=False,type='bool'),
 			stack_recommendations=dict(default=False,type='bool'),
 			wait_for_build=dict(default=False,type='bool'),
-			build_timeout=dict(default=1200,type='int'),
+			build_timeout=dict(default=1600,type='int'),
 			ambari_address=dict(default='localhost', type='str'),
 			ambari_port=dict(default='8080', type='str'),
 			username=dict(default='admin', type='str'),

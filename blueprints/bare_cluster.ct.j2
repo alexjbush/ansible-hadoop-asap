@@ -1,11 +1,13 @@
 {
   "blueprint" : "{{ cluster_name }}",
   "configurations" : [
+{% if 'OOZIE' in blueprint_services %}
     {
       "oozie-site" : {
         "oozie.service.JPAService.jdbc.password" : "{{ mysql_oozie_password }}"
       }
     },
+{% endif %}
     {
       "hive-site" : {
         "javax.jdo.option.ConnectionPassword" : "{{ mysql_hive_password }}"
