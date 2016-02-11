@@ -24,7 +24,7 @@ Most configuration is done through the [group_vars](group_vars) files.
 
 For now, users can be configured in the [vars/users.yml](vars/users.yml) file and KDC credentials can be configured in the [vars/kdc_config](vars/kdc_config) file.
 
-Services can be configured in the [group_vars/all](group_vars/all) file. Currently only Oozie, Falcon and Kafka are optional services. All others are mandatory.
+Services can be configured in the [group_vars/all](group_vars/all) file. Currently only Oozie, Falcon, Storm and Kafka are optional services. All others are mandatory.
 
 #### Running the Playbook
 ```

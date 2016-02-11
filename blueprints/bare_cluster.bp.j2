@@ -199,6 +199,11 @@
           "name" : "KAFKA_BROKER"
         },
 {% endif %}
+{% if 'STORM' in blueprint_services %}
+        {
+          "name" : "SUPERVISOR"
+        },
+{% endif %}
         {
           "name" : "DATANODE"
         }
@@ -290,6 +295,17 @@
         {
           "name" : "ZOOKEEPER_CLIENT"
         },
+{% if 'STORM' in blueprint_services %}
+        {
+          "name" : "NIMBUS"
+        },
+        {
+          "name" : "DRPC_SERVER"
+        },
+        {
+          "name" : "STORM_UI_SERVER"
+        },
+{% endif %}
         {
           "name" : "PIG"
         },
