@@ -13,8 +13,8 @@ mysql_port: 3306
 hdp_stack: 2.3
 blueprint_file: bare_cluster.bp.j2
 cluster_definition_file: bare_cluster.ct.j2
-#KAFKA, OOZIE and FALCON are optional. Omit them from this list to prevent them being installed
-#blueprint_services: "STORM,KAFKA,HDFS,OOZIE,HIVE,FALCON,MAPREDUCE2,PIG,SQOOP,TEZ,YARN,ZOOKEEPER"
-blueprint_services: "STORM,KAFKA,HDFS,HIVE,MAPREDUCE2,PIG,SQOOP,TEZ,YARN,ZOOKEEPER"
+#HBASE, STORM, KAFKA, OOZIE and FALCON are optional. Omit them from this list to prevent them being installed
+#blueprint_services: "HBASE,STORM,KAFKA,HDFS,OOZIE,HIVE,FALCON,MAPREDUCE2,PIG,SQOOP,TEZ,YARN,ZOOKEEPER"
+blueprint_services: "STORM,HDFS,HIVE,MAPREDUCE2,PIG,SQOOP,TEZ,YARN,ZOOKEEPER"
 #Whether to use Ambari Stack recommendations API
 use_ambari_recommendations: yes
