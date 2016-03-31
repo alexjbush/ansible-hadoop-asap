@@ -8,4 +8,12 @@ mysql_hive_password: hive
 mysql_oozie_database: oozie
 mysql_oozie_user: oozie
 mysql_oozie_password: oozie
+mysql_ranger_database: ranger
+mysql_ranger_user: ranger
+mysql_ranger_password: ranger
+mysql_rangeraudit_database: rangeraudit
+mysql_rangeraudit_user: rangeraudit
+mysql_rangeraudit_password: rangeraudit
+mysql_root_user: root
+mysql_root_password: bigdata
 restart_ambari_server_after_installs: true

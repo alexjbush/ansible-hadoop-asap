@@ -7,6 +7,153 @@
                 }
             }
         },
+{% if 'KERBEROS' in blueprint_services %}
+    {
+          "kerberos-env": {
+            "properties_attributes" : { },
+            "properties" : {
+              "realm" : "{{ krb_realm }}",
+              "kdc_type" : "mit-kdc",
+              "kdc_host" : "{{ groups[cluster_name+'_kdcmaster'][0] }}",
+              "encryption_types": "aes des3-cbc-sha1 rc4 des-cbc-md5",
+              "ldap_url" : "",
+              "container_dn" : "",
+              "admin_server_host" : "{{ groups[cluster_name+'_kdcmaster'][0] }}"
+            }
+          }
+        },
+        {
+          "krb5-conf": {
+            "properties_attributes" : { },
+            "properties" : {
+              "domains" : "",
+              "manage_krb5_conf" : "false"
+            }
+          }
+        },
+{% endif %}
+{% if 'RANGER' in blueprint_services %}
+    {
+      "admin-properties" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "DB_FLAVOR" : "MYSQL",
+          "audit_db_name" : "{{ mysql_rangeraudit_database }}",
+          "db_name" : "{{ mysql_ranger_database }}",
+          "audit_db_user" : "{{ mysql_rangeraudit_user }}",
+          "SQL_CONNECTOR_JAR" : "/usr/share/java/mysql-connector-java.jar",
+          "db_user" : "{{ mysql_ranger_user }}",
+          "policymgr_external_url" : "http://{{ groups[cluster_name+'_mn03'][0] }}:6080",
+          "db_host" : "{{ groups[cluster_name+'_mn03'][0] }}:3306",
+          "db_root_user" : "{{ mysql_root_user }}",
+          "db_root_password" : "{{ mysql_root_password }}",
+          "db_password" : "{{ mysql_ranger_password }}",
+          "audit_db_password" : "{{ mysql_rangeraudit_password }}"
+        }
+      }
+    },
+    {
+      "ranger-admin-site" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "ranger.jpa.jdbc.url" : "jdbc:mysql://{{ groups[cluster_name+'_mn03'][0] }}:3306/{{ mysql_ranger_database }}",
+          "ranger.jpa.audit.jdbc.url" : "jdbc:mysql://{{ groups[cluster_name+'_mn03'][0] }}:3306/{{ mysql_rangeraudit_database }}"
+        }
+      }
+    },
+    {
+      "ranger-env" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "ranger_user" : "ranger",
+          "ranger-hdfs-plugin-enabled" : "Yes",
+          "ranger-yarn-plugin-enabled" : "No",
+{% if 'KAFKA' in blueprint_services %}
+          "ranger-kafka-plugin-enabled" : "Yes",
+{% endif %}
+{% if 'HBASE' in blueprint_services %}
+          "ranger-hbase-plugin-enabled" : "Yes",
+{% endif %}
+          "ranger-hive-plugin-enabled" : "Yes",
+{% if 'STORM' in blueprint_services %}
+          "ranger-storm-plugin-enabled" : "Yes",
+{% endif %}
+          "xasecure.audit.destination.solr" : "false",
+          "xasecure.audit.destination.db" : "true",
+          "ranger_group" : "ranger",
+          "ranger_admin_username" : "amb_ranger_admin",
+          "ranger_admin_password" : "amb_ranger_admin",
+          "admin_username" : "admin"
+        }
+      }
+    },
+    {
+        "ranger-hdfs-plugin-properties" : {
+          "properties_attributes" : { },
+          "properties" : {
+            "REPOSITORY_CONFIG_USERNAME" : "hadoop",
+            "ranger-hdfs-plugin-enabled" : "Yes",
+            "common.name.for.certificate" : "",
+            "policy_user" : "ambari-qa",
+            "hadoop.rpc.protection" : ""
+          }
+        }
+      },
+      {
+          "ranger-hive-plugin-properties" : {
+            "properties_attributes" : { },
+            "properties" : {
+              "REPOSITORY_CONFIG_USERNAME" : "hive",
+              "ranger-hive-plugin-enabled" : "Yes",
+              "common.name.for.certificate" : "",
+              "policy_user" : "ambari-qa",
+              "hadoop.rpc.protection" : ""
+            }
+          }
+        },
+{% if 'HBASE' in blueprint_services %}
+        {
+            "ranger-hbase-plugin-properties" : {
+              "properties_attributes" : { },
+              "properties" : {
+                "REPOSITORY_CONFIG_USERNAME" : "hbase",
+                "ranger-hbase-plugin-enabled" : "Yes",
+                "common.name.for.certificate" : "",
+                "policy_user" : "ambari-qa",
+                "hadoop.rpc.protection" : ""
+              }
+            }
+          },
+{% endif %}
+{% if 'KAFKA' in blueprint_services %}
+          {
+              "ranger-kafka-plugin-properties" : {
+                "properties_attributes" : { },
+                "properties" : {
+                  "REPOSITORY_CONFIG_USERNAME" : "kafka",
+                  "ranger-kafka-plugin-enabled" : "Yes",
+                  "common.name.for.certificate" : "",
+                  "policy_user" : "ambari-qa",
+                  "hadoop.rpc.protection" : ""
+                }
+              }
+            },
+{% endif %}
+{% if 'STORM' in blueprint_services %}
+            {
+                "ranger-storm-plugin-properties" : {
+                  "properties_attributes" : { },
+                  "properties" : {
+                    "REPOSITORY_CONFIG_USERNAME" : "storm",
+                    "ranger-storm-plugin-enabled" : "Yes",
+                    "common.name.for.certificate" : "",
+                    "policy_user" : "ambari-qa",
+                    "hadoop.rpc.protection" : ""
+                  }
+                }
+              },
+{% endif %}
+{% endif %}
 {% if 'OOZIE' in blueprint_services %}
         {
             "oozie-site" : {
@@ -109,6 +256,11 @@
         }
     ],
   "Blueprints" : {
+{% if 'KERBEROS' in blueprint_services %}
+    "security" : {
+         "type" : "KERBEROS"
+    },
+{% endif %}
     "stack_name" : "HDP",
     "stack_version" : "{{ hdp_stack }}"
   },
@@ -117,6 +269,19 @@
       "name" : "mn03",
       "configurations" : [ ],
       "components" : [
+{% if 'KERBEROS' in blueprint_services %}
+        {
+          "name" : "KERBEROS_CLIENT"
+        },
+{% endif %}
+{% if 'RANGER' in blueprint_services %}
+        {
+              "name" : "RANGER_USERSYNC"
+        },
+        {
+              "name" : "RANGER_ADMIN"
+        },
+{% endif %}
         {
           "name" : "ZOOKEEPER_SERVER"
         },
@@ -142,6 +307,11 @@
         {
           "name" : "PIG"
         },
+{% if 'SPARK' in blueprint_services %}
+        {
+          "name" : "SPARK_CLIENT"
+        },
+{% endif %}
         {
           "name" : "HIVE_SERVER"
         },
@@ -188,6 +358,11 @@
       "name" : "datanode",
       "configurations" : [ ],
       "components" : [
+{% if 'KERBEROS' in blueprint_services %}
+        {
+          "name" : "KERBEROS_CLIENT"
+        },
+{% endif %}
         {
           "name" : "NODEMANAGER"
         },
@@ -218,12 +393,31 @@
       "name" : "mn01",
       "configurations" : [ ],
       "components" : [
+{% if 'KERBEROS' in blueprint_services %}
+        {
+          "name" : "KERBEROS_CLIENT"
+        },
+{% endif %}
         {
           "name" : "ZOOKEEPER_SERVER"
         },
         {
           "name" : "ZOOKEEPER_CLIENT"
         },
+{% if 'STORM' in blueprint_services %}
+{% if 'STORM' in ha_services %}
+        {
+          "name" : "NIMBUS"
+        },
+{% endif %}
+{% endif %}
+{% if 'KAFKA' in blueprint_services %}
+{% if 'KAFKA' in ha_services %}
+        {
+          "name" : "KAFKA_BROKER"
+        },
+{% endif %}
+{% endif %}
         {
           "name" : "PIG"
         },
@@ -272,6 +466,11 @@
       "name" : "jobserver",
       "configurations" : [ ],
       "components" : [
+{% if 'KERBEROS' in blueprint_services %}
+        {
+          "name" : "KERBEROS_CLIENT"
+        },
+{% endif %}
         {
           "name" : "ZOOKEEPER_CLIENT"
         },
@@ -302,6 +501,11 @@
       "name" : "mn02",
       "configurations" : [ ],
       "components" : [
+{% if 'KERBEROS' in blueprint_services %}
+        {
+          "name" : "KERBEROS_CLIENT"
+        },
+{% endif %}
         {
           "name" : "ZOOKEEPER_SERVER"
         },
@@ -355,6 +559,14 @@
 {% if 'HBASE' in blueprint_services %}
         {
           "name" : "HBASE_CLIENT"
+        },
+{% endif %}
+{% if 'SPARK' in blueprint_services %}
+        {
+          "name" : "SPARK_JOBHISTORYSERVER"
+        },
+        {
+          "name" : "SPARK_CLIENT"
         },
 {% endif %}
         {

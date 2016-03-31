@@ -11,4 +11,4 @@
 
 - include: pb_ambari_blueprint_cluster.yml
 
-- include: pb_ambari_kerberise_cluster.yml
+#- include: pb_ambari_kerberise_cluster.yml

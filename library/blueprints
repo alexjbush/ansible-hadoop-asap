@@ -195,6 +195,8 @@ def post_cluster(cluster_name, cluster_path, ambari_address, ambari_port, userna
 		module.fail_json(msg='Failed to build cluster: '+str(error.read()))
 	results = json.loads(response.read())
 	request_url = results['href']
+	#Ambari 2.2.1 bug, must wait for tasks to be issued of build fails
+	time.sleep(10)
 	if wait_for_build:
 		start = time.time()
 		while True:

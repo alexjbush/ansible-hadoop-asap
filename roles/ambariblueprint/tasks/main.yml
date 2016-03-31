@@ -1,4 +1,7 @@
 ---
+- name: include kdc config vars for kerberise play
+  include_vars: vars/kdc_config
+
 - name: create blueprint folder
   file: path={{ blueprint_folder }} state=directory
   sudo: yes

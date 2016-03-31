@@ -7,6 +7,8 @@
     - "{{ mysql_ambari_database }}"
     - "{{ mysql_hive_database }}"
     - "{{ mysql_oozie_database }}"
+    - "{{ mysql_ranger_database }}"
+    - "{{ mysql_rangeraudit_database }}"
 
 - name: grant to ambari database
   mysql_user: >
@@ -44,3 +46,34 @@
     - "{{ groups[cluster_name+'_ambariserver'][0] }}"
   sudo: yes
 
+- name: grant to ranger database
+  mysql_user: >
+        name="{{ mysql_ranger_user }}" password="{{ mysql_ranger_password }}"
+        priv="{{ mysql_ranger_database }}.*:ALL" state=present host="{{ item }}"
+        append_privs=yes
+  delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
+  with_items:
+    - localhost
+    - "{{ groups[cluster_name+'_mysql'][0] }}"
+    - "{{ groups[cluster_name+'_ambariserver'][0] }}"
+  sudo: yes
+
+- name: grant to rangeraudit database
+  mysql_user: >
+        name="{{ mysql_rangeraudit_user }}" password="{{ mysql_rangeraudit_password }}"
+        priv="{{ mysql_rangeraudit_database }}.*:ALL" state=present host="{{ item }}"
+        append_privs=yes
+  delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
+  with_items:
+    - localhost
+    - "{{ groups[cluster_name+'_mysql'][0] }}"
+    - "{{ groups[cluster_name+'_ambariserver'][0] }}"
+  sudo: yes
+
+- name: grant to select acccess to mysql db for ranger
+  mysql_user: >
+        name="{{ mysql_root_user }}" password="{{ mysql_root_password }}"
+        priv="*.*:ALL,GRANT" state=present host="{{ groups[cluster_name+'_ambariserver'][0] }}"
+        append_privs=yes
+  delegate_to: "{{ groups[cluster_name+'_mysql'][0] }}"
+  sudo: yes

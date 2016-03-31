@@ -4,6 +4,7 @@
 
 require 'open3'
 require 'json'
+require 'yaml'
 
 #Load dynamic inventory file
 stdin, stdout, stderr, wait_thr = Open3.popen3('python ./inventory.py --vagrant')
