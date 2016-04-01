@@ -1,4 +1,7 @@
 ---
+- name: include cert vars in case we are ssl
+  include_vars: vars/cert_vars.yml
+
 - name: include kdc config vars for kerberise play
   include_vars: vars/kdc_config
 

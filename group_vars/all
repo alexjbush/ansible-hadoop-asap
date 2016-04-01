@@ -19,5 +19,7 @@ blueprint_services: "KERBEROS,RANGER,HDFS,HIVE,MAPREDUCE2,PIG,SQOOP,TEZ,YARN,ZOO
 #STORM and KAFKA can be optionally HA. Omit them from this list to prevent these services being HA
 #ha_services: "STORM,KAFKA"
 ha_services: "KAFKA"
+#ssl_services: "RANGER"
+ssl_services: "RANGER"
 #Whether to use Ambari Stack recommendations API
 use_ambari_recommendations: yes

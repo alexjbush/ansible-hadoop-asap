@@ -3,6 +3,9 @@
         {
             "hive-env": {
                 "properties": {
+{% if 'KERBEROS' in blueprint_services %}
+                    "hive_security_authorization" : "Ranger",
+{% endif %}
                     "hive_database": "Existing MySQL Database"
                 }
             }
@@ -43,7 +46,11 @@
           "audit_db_user" : "{{ mysql_rangeraudit_user }}",
           "SQL_CONNECTOR_JAR" : "/usr/share/java/mysql-connector-java.jar",
           "db_user" : "{{ mysql_ranger_user }}",
+{% if 'RANGER' in ssl_services %}
+          "policymgr_external_url" : "https://{{ groups[cluster_name+'_mn03'][0] }}:6182",
+{% else %}
           "policymgr_external_url" : "http://{{ groups[cluster_name+'_mn03'][0] }}:6080",
+{% endif %}
           "db_host" : "{{ groups[cluster_name+'_mn03'][0] }}:3306",
           "db_root_user" : "{{ mysql_root_user }}",
           "db_root_password" : "{{ mysql_root_password }}",
@@ -56,8 +63,27 @@
       "ranger-admin-site" : {
         "properties_attributes" : { },
         "properties" : {
+{% if 'RANGER' in ssl_services %}
+          "ranger.service.https.attrib.ssl.enabled" : "true",
+          "ranger.service.http.enabled" : "false",
+          "ranger.https.attrib.keystore.file" : "{{ cert_dir }}/{{ groups[cluster_name+'_mn03'][0] }}.jks",
+          "ranger.service.https.attrib.keystore.pass" : "{{ keystore_default_pass }}",
+          "ranger.service.https.attrib.clientAuth" : "want",
+          "ranger.service.https.attrib.keystore.keyalias" : "{{ groups[cluster_name+'_mn03'][0] }}",
+{% endif %}
           "ranger.jpa.jdbc.url" : "jdbc:mysql://{{ groups[cluster_name+'_mn03'][0] }}:3306/{{ mysql_ranger_database }}",
           "ranger.jpa.audit.jdbc.url" : "jdbc:mysql://{{ groups[cluster_name+'_mn03'][0] }}:3306/{{ mysql_rangeraudit_database }}"
+        }
+      }
+    },
+    {
+      "ranger-ugsync-site" : {
+        "properties_attributes" : { },
+        "properties" : {
+{% if 'RANGER' in ssl_services %}
+          "ranger.usersync.truststore.file" : "{{ cert_dir }}/clusterTrustStore.jks",
+          "ranger.usersync.truststore.password" : "{{ truststore_default_pass }}"
+{% endif %}
         }
       }
     },
@@ -93,24 +119,58 @@
           "properties" : {
             "REPOSITORY_CONFIG_USERNAME" : "hadoop",
             "ranger-hdfs-plugin-enabled" : "Yes",
+{% if 'RANGER' in ssl_services %}
+            "common.name.for.certificate" : "rangerHdfsAgent",
+{% else %}
             "common.name.for.certificate" : "",
+{% endif %}
             "policy_user" : "ambari-qa",
             "hadoop.rpc.protection" : ""
           }
         }
       },
+{% if 'RANGER' in ssl_services %}
+     {
+        "ranger-hdfs-policymgr-ssl" : {
+           "properties_attributes" : { },
+           "properties" : {
+               "xasecure.policymgr.clientssl.keystore" : "{{ cert_dir }}/rangerHdfsAgent.jks",
+               "xasecure.policymgr.clientssl.keystore.password" : "{{ keystore_default_pass }}",
+               "xasecure.policymgr.clientssl.truststore" : "{{ cert_dir }}/clusterTrustStore.jks",
+               "xasecure.policymgr.clientssl.truststore.password" : "{{ truststore_default_pass }}"
+          }
+        }
+      },
+{% endif %}
       {
           "ranger-hive-plugin-properties" : {
             "properties_attributes" : { },
             "properties" : {
               "REPOSITORY_CONFIG_USERNAME" : "hive",
               "ranger-hive-plugin-enabled" : "Yes",
+{% if 'RANGER' in ssl_services %}
+              "common.name.for.certificate" : "rangerHiveAgent",
+{% else %}
               "common.name.for.certificate" : "",
+{% endif %}
               "policy_user" : "ambari-qa",
               "hadoop.rpc.protection" : ""
             }
           }
         },
+{% if 'RANGER' in ssl_services %}
+     {
+        "ranger-hive-policymgr-ssl" : {
+           "properties_attributes" : { },
+           "properties" : {
+               "xasecure.policymgr.clientssl.keystore" : "{{ cert_dir }}/rangerHiveAgent.jks",
+               "xasecure.policymgr.clientssl.keystore.password" : "{{ keystore_default_pass }}",
+               "xasecure.policymgr.clientssl.truststore" : "{{ cert_dir }}/clusterTrustStore.jks",
+               "xasecure.policymgr.clientssl.truststore.password" : "{{ truststore_default_pass }}"
+          }
+        }
+      },
+{% endif %}
 {% if 'HBASE' in blueprint_services %}
         {
             "ranger-hbase-plugin-properties" : {
@@ -118,12 +178,29 @@
               "properties" : {
                 "REPOSITORY_CONFIG_USERNAME" : "hbase",
                 "ranger-hbase-plugin-enabled" : "Yes",
+{% if 'RANGER' in ssl_services %}
+                "common.name.for.certificate" : "rangerHbaseAgent",
+{% else %}
                 "common.name.for.certificate" : "",
+{% endif %}
                 "policy_user" : "ambari-qa",
                 "hadoop.rpc.protection" : ""
               }
             }
           },
+{% if 'RANGER' in ssl_services %}
+     {
+        "ranger-hbase-policymgr-ssl" : {
+           "properties_attributes" : { },
+           "properties" : {
+               "xasecure.policymgr.clientssl.keystore" : "{{ cert_dir }}/rangerHbaseAgent.jks",
+               "xasecure.policymgr.clientssl.keystore.password" : "{{ keystore_default_pass }}",
+               "xasecure.policymgr.clientssl.truststore" : "{{ cert_dir }}/clusterTrustStore.jks",
+               "xasecure.policymgr.clientssl.truststore.password" : "{{ truststore_default_pass }}"
+          }
+        }
+      },
+{% endif %}
 {% endif %}
 {% if 'KAFKA' in blueprint_services %}
           {
@@ -132,12 +209,29 @@
                 "properties" : {
                   "REPOSITORY_CONFIG_USERNAME" : "kafka",
                   "ranger-kafka-plugin-enabled" : "Yes",
+{% if 'RANGER' in ssl_services %}
+                  "common.name.for.certificate" : "rangerKafkaAgent",
+{% else %}
                   "common.name.for.certificate" : "",
+{% endif %}
                   "policy_user" : "ambari-qa",
                   "hadoop.rpc.protection" : ""
                 }
               }
             },
+{% if 'RANGER' in ssl_services %}
+     {
+        "ranger-kafka-policymgr-ssl" : {
+           "properties_attributes" : { },
+           "properties" : {
+               "xasecure.policymgr.clientssl.keystore" : "{{ cert_dir }}/rangerKafkaAgent.jks",
+               "xasecure.policymgr.clientssl.keystore.password" : "{{ keystore_default_pass }}",
+               "xasecure.policymgr.clientssl.truststore" : "{{ cert_dir }}/clusterTrustStore.jks",
+               "xasecure.policymgr.clientssl.truststore.password" : "{{ truststore_default_pass }}"
+          }
+        }
+      },
+{% endif %}
 {% endif %}
 {% if 'STORM' in blueprint_services %}
             {
@@ -146,12 +240,29 @@
                   "properties" : {
                     "REPOSITORY_CONFIG_USERNAME" : "storm",
                     "ranger-storm-plugin-enabled" : "Yes",
+{% if 'RANGER' in ssl_services %}
+                    "common.name.for.certificate" : "rangerStormAgent",
+{% else %}
                     "common.name.for.certificate" : "",
+{% endif %}
                     "policy_user" : "ambari-qa",
                     "hadoop.rpc.protection" : ""
                   }
                 }
               },
+{% if 'RANGER' in ssl_services %}
+     {
+        "ranger-storm-policymgr-ssl" : {
+           "properties_attributes" : { },
+           "properties" : {
+               "xasecure.policymgr.clientssl.keystore" : "{{ cert_dir }}/rangerStormAgent.jks",
+               "xasecure.policymgr.clientssl.keystore.password" : "{{ keystore_default_pass }}",
+               "xasecure.policymgr.clientssl.truststore" : "{{ cert_dir }}/clusterTrustStore.jks",
+               "xasecure.policymgr.clientssl.truststore.password" : "{{ truststore_default_pass }}"
+          }
+        }
+      },
+{% endif %}
 {% endif %}
 {% endif %}
 {% if 'OOZIE' in blueprint_services %}
@@ -194,8 +305,24 @@
         {
             "hive-site": {
                 "properties": {
+{% if 'RANGER' in blueprint_services %}
+                    "hive.security.authorization.enabled" : "true",
+                    "hive.server2.enable.doAs" : "false",
+{% endif %}
                     "hive.enforce.bucketing": "false",
                     "javax.jdo.option.ConnectionURL": "jdbc:mysql://{{ groups[cluster_name+'_mn03'][0] }}/hive?createDatabaseIfNotExist=true"
+                }
+            }
+        },
+        {
+            "hiveserver2-site": {
+                "properties": {
+{% if 'RANGER' in blueprint_services %}
+                    "hive.security.authorization.enabled" : "true",
+                    "hive.conf.restricted.list" : "hive.security.authorization.enabled,hive.security.authorization.manager,hive.security.authenticator.manager",
+                    "hive.security.authenticator.manager" : "org.apache.hadoop.hive.ql.security.SessionStateUserAuthenticator",
+                    "hive.security.authorization.manager" : "org.apache.ranger.authorization.hive.authorizer.RangerHiveAuthorizerFactory"
+{% endif %}
                 }
             }
         },
@@ -245,6 +372,9 @@
         {
             "hdfs-site": {
                 "properties": {
+{% if 'RANGER' in blueprint_services %}
+                "dfs.namenode.inode.attributes.provider.class" : "org.apache.ranger.authorization.hadoop.RangerHdfsAuthorizer"
+{% endif %}
                 }
             }
         },
