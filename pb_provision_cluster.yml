@@ -7,9 +7,9 @@
 
 - include: pb_configure_sssd.yml
 
-- include: pb_ambari_setup.yml
-
 - include: pb_ssl_certificates.yml
+
+- include: pb_ambari_setup.yml
 
 - include: pb_ambari_blueprint_cluster.yml
 

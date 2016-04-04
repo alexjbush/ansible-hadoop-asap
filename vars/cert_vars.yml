@@ -1,0 +1,16 @@
+keystore_default_pass: bigdata
+truststore_default_pass: changeit
+key_default_pass: bigdata
+cert_dir: /etc/security/serverkeys
+ranger_certs:
+  - rangerHdfsAgent
+  - rangerHiveAgent
+  - rangerHbaseAgent
+  - rangerStormAgent
+  - rangerKafkaAgent
+temp_local_path: /tmp/ansible_hdp_certs_local
+temp_remote_path: /tmp/ansible_hdp_certs_remote
+tar_filename: certs.tar.gz
+java_truststore_default_pass: changeit
+#Often /etc/pki/java/cacerts
+java_truststore_location: "/usr/java/jdk1.{{ java_version }}.0_{{ java_subversion }}/jre/lib/security/cacerts"

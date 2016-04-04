@@ -9,6 +9,7 @@ This has been tested against CentOS6 and CentOS7 in Vagrant.
 * Kerberos now deployed optionally during blueprint build. Specify it as a service in: [group_var/all](group_vars/all) (Only available Ambari 2.2.1+ due to [AMBARI-14409](https://issues.apache.org/jira/browse/AMBARI-14409), use the old deployment method if a lower Ambari version is needed)
 * Ranger now deployed as an optional service
 * Ranger SSL now optional. Check ssl_services in [group_var/all](group_vars/all)
+* Namenode HA now optional by specifying namenode in ha_services in [group_var/all](group_vars/all)
 
 ## Getting started
 The inventory file is expected in be in a format similar to the example: [example](inventories/example_inventory).

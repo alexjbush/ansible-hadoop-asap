@@ -294,6 +294,10 @@
         {
             "core-site": {
                 "properties": {
+{% if 'NAMENODE' in ha_services %}
+                    "fs.defaultFS" : "hdfs://{{ cluster_name }}",
+                    "ha.zookeeper.quorum" : "{{ groups[cluster_name+'_mn01'][0] }}:2181,{{ groups[cluster_name+'_mn02'][0] }}:2181,{{ groups[cluster_name+'_mn03'][0] }}:2181",
+{% endif %}
                     "hadoop.proxyuser.hive.groups": "*",
                     "hadoop.proxyuser.hdfs.groups": "*",
                     "hadoop.proxyuser.hcat.hosts": "{{ groups[cluster_name+'_mn03'][0] }}",
@@ -372,9 +376,26 @@
         {
             "hdfs-site": {
                 "properties": {
-{% if 'RANGER' in blueprint_services %}
-                "dfs.namenode.inode.attributes.provider.class" : "org.apache.ranger.authorization.hadoop.RangerHdfsAuthorizer"
+{% if 'NAMENODE' in ha_services %}
+                  "dfs.client.failover.proxy.provider.{{ cluster_name }}" : "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider",
+                  "dfs.ha.automatic-failover.enabled" : "true",
+                  "dfs.ha.fencing.methods" : "shell(/bin/true)",
+                  "dfs.ha.namenodes.{{ cluster_name }}" : "nn1,nn2",
+                  "dfs.namenode.http-address" : "{{ groups[cluster_name+'_mn01'][0] }}:50070",
+                  "dfs.namenode.http-address.{{ cluster_name }}.nn1" : "{{ groups[cluster_name+'_mn01'][0] }}:50070",
+                  "dfs.namenode.http-address.{{ cluster_name }}.nn2" : "{{ groups[cluster_name+'_mn02'][0] }}:50070",
+                  "dfs.namenode.https-address" : "{{ groups[cluster_name+'_mn01'][0] }}:50470",
+                  "dfs.namenode.https-address.{{ cluster_name }}.nn1" : "{{ groups[cluster_name+'_mn01'][0] }}:50470",
+                  "dfs.namenode.https-address.{{ cluster_name }}.nn2" : "{{ groups[cluster_name+'_mn02'][0] }}:50470",
+                  "dfs.namenode.rpc-address.{{ cluster_name }}.nn1" : "{{ groups[cluster_name+'_mn01'][0] }}:8020",
+                  "dfs.namenode.rpc-address.{{ cluster_name }}.nn2" : "{{ groups[cluster_name+'_mn02'][0] }}:8020",
+                  "dfs.namenode.shared.edits.dir" : "qjournal://{{ groups[cluster_name+'_mn01'][0] }}:8485;{{ groups[cluster_name+'_mn02'][0] }}:8485;{{ groups[cluster_name+'_mn03'][0] }}:8485/{{ cluster_name }}",
+                  "dfs.nameservices" : "{{ cluster_name }}",
 {% endif %}
+{% if 'RANGER' in blueprint_services %}
+                  "dfs.namenode.inode.attributes.provider.class" : "org.apache.ranger.authorization.hadoop.RangerHdfsAuthorizer",
+{% endif %}
+                  "dfs.cluster.administrators" : "hdfs"
                 }
             }
         },
@@ -457,6 +478,11 @@
         {
           "name" : "HIVE_METASTORE"
         },
+{% if 'NAMENODE' in ha_services %}
+        {
+          "name" : "JOURNALNODE"
+        },
+{% endif %}
         {
           "name" : "AMBARI_SERVER"
         },
@@ -554,6 +580,14 @@
         {
           "name" : "NAMENODE"
         },
+{% if 'NAMENODE' in ha_services %}
+        {
+          "name" : "ZKFC"
+        },
+        {
+          "name" : "JOURNALNODE"
+        },
+{% endif %}
         {
           "name" : "HCAT"
         },
@@ -665,9 +699,21 @@
         {
           "name" : "METRICS_MONITOR"
         },
+{% if 'NAMENODE' in ha_services %}
+        {
+          "name" : "ZKFC"
+        },
+        {
+          "name" : "JOURNALNODE"
+        },
+        {
+          "name" : "NAMENODE"
+        },
+{% else %}
         {
           "name" : "SECONDARY_NAMENODE"
         },
+{% endif %}
         {
           "name" : "TEZ_CLIENT"
         },

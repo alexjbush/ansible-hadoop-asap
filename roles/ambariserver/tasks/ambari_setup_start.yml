@@ -12,7 +12,7 @@
   when: not connector.stat.exists
 
 - name: unpack the connector
-  unarchive: src="/tmp/mysql-connector-java-{{ mysql_connector_version }}.tar.gz" dest=/tmp/ copy=no 
+  unarchive: src="/tmp/mysql-connector-java-{{ mysql_connector_version }}.tar.gz" dest=/tmp/ copy=no
   when: not connector.stat.exists
 
 - name: copy connector jar file
@@ -73,6 +73,32 @@
   copy: src=ambari-server.service dest=/usr/lib/systemd/system/ambari-server.service owner=root group=root mode=644
   sudo: yes
   when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version == "7" and not systemdstat.stat.exists'
+
+- name: Check whether ambari server has truststore conf
+  shell: cat /etc/ambari-server/conf/ambari.properties | grep trustStore | wc -l
+  register: amb_trust
+  ignore_errors: True
+  changed_when: False
+
+- name: stop ambari server for trust store
+  service: name=ambari-server state=stopped
+  sudo: yes
+  when: 'amb_trust.stdout == 0'
+
+- name: include cert vars
+  include_vars: vars/cert_vars.yml
+
+- name: put truststore details in file
+  lineinfile: dest=/etc/ambari-server/conf/ambari.properties regexp="^{{ item.key }}=" line="{{ item.key }}={{ item.value }}"
+  sudo: yes
+  when: 'amb_trust.stdout == 0'
+  with_items:
+    - key: ssl.trustStore.type
+      value: jks
+    - key: ssl.trustStore.path
+      value: "{{ cert_dir }}/clusterTrustStore.jks"
+    - key: ssl.trustStore.password
+      value: "{{ truststore_default_pass }}"
 
 - name: start ambari server
   service: name=ambari-server state=started enabled=yes

@@ -20,7 +20,7 @@
   sudo: yes
   args:
     creates: "{{ cert_dir }}/{{ item }}.jks"
-  when: "inventory_hostname == groups['kdcmaster'][0]"
+  when: "inventory_hostname == groups['kdcmaster'][0] or item != '127.0.0.1'"
   register: create_keys
 
 - name: create ssl certificates and import into truststore
@@ -31,7 +31,7 @@
   sudo: yes
   args:
     creates: "{{ cert_dir }}/{{ item }}.crt"
-  when: "inventory_hostname == groups['kdcmaster'][0]"
+  when: "inventory_hostname == groups['kdcmaster'][0] or item != '127.0.0.1'"
   register: create_keys
 
 - name: create temp folder on remote fs
@@ -80,3 +80,4 @@
   sudo: yes
   register: java_truststore
   changed_when: "'Certificate was added to keystore' in java_truststore.stderr"
+  when: "item != '127.0.0.1'"
