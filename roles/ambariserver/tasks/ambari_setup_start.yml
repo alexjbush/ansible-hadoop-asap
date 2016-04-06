@@ -83,7 +83,7 @@
 - name: stop ambari server for trust store
   service: name=ambari-server state=stopped
   sudo: yes
-  when: 'amb_trust.stdout == 0'
+  when: 'amb_trust.stdout == "0"'
 
 - name: include cert vars
   include_vars: vars/cert_vars.yml
@@ -91,7 +91,7 @@
 - name: put truststore details in file
   lineinfile: dest=/etc/ambari-server/conf/ambari.properties regexp="^{{ item.key }}=" line="{{ item.key }}={{ item.value }}"
   sudo: yes
-  when: 'amb_trust.stdout == 0'
+  when: 'amb_trust.stdout == "0"'
   with_items:
     - key: ssl.trustStore.type
       value: jks

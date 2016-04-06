@@ -54,6 +54,7 @@ Currently, users are managed in an OpenLDAP server and their credentials are sto
 - [ ] OpenStack support
 - [ ] Azure support
 - [x] NTP
+- [ ] Make use of config_recommendation_strategy For Ambari version >= 2.2.0
 
 
 ## [License](LICENSE)
