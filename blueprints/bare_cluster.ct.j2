@@ -1,4 +1,5 @@
 {
+  "default_password" : "{{ blueprint_default_password }}",
   "blueprint" : "{{ cluster_name }}",
 {% if 'KERBEROS' in blueprint_services %}
   "credentials" : [

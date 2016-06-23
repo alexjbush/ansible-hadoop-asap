@@ -35,6 +35,29 @@
           }
         },
 {% endif %}
+{% if 'STORM' in blueprint_services %}
+    {
+       "storm-site" : {
+        "properties" : {
+{% if 'STORMUI' in ssl_services %}
+   "ui.https.port" : "8740",
+   "ui.https.keystore.type" : "jks",
+   "ui.https.keystore.path" : "{{ cert_dir }}/{{ groups[cluster_name+'_mn02'][0] }}.jks",
+   "ui.https.keystore.password" : "{{ keystore_default_pass }}",
+   "ui.https.key.password" : "{{ key_default_pass }}",
+   "ui.https.truststore.path" : "{{ cert_dir }}/clusterTrustStore.jks",
+   "ui.https.truststore.password" : "{{ keystore_default_pass }}",
+   "ui.https.truststore.type" : "jks",
+{% endif %}
+{% if 'RANGER' in blueprint_services %}
+   "nimbus.authorizer" : "org.apache.ranger.authorization.storm.authorizer.RangerStormAuthorizer"
+{% else %}
+   "nimbus.authorizer" : "backtype.storm.security.auth.authorizer.SimpleACLAuthorizer"
+{% endif %}
+       }
+     }
+    },
+{% endif %}
 {% if 'RANGER' in blueprint_services %}
     {
       "admin-properties" : {
