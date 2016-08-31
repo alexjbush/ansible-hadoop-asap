@@ -6,11 +6,12 @@ krb_domain: vagrant
 #Check roles/oracle-java/tasks/set_vars.yml for allowed values
 java_version: 7
 java_subversion: 75
-#ambari_version: 2.1.2
+#Ambari server version must match a repo version in repo_files
 ambari_version: 2.2.2.2-2
 mysql_connector_version: 5.1.39
 mysql_port: 3306
-hdp_stack: 2.3
+#HDP version must match a HDP/OS version in groupvars/ambariserver. You can give custom stack versions by defining them in groupvars/ambariserver.
+hdp_version: 2.3.4.0
 blueprint_file: bare_cluster.bp.j2
 cluster_definition_file: bare_cluster.ct.j2
 #KERBEROS, SPARK, HBASE, STORM, KAFKA, OOZIE and FALCON are optional. Omit them from this list to prevent them being installed

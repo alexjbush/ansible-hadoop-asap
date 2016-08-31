@@ -136,6 +136,29 @@ def wait_for_registered_hosts(ambari_address, ambari_port, username, password, h
 			' for hosts: '+','.join(missing_hosts))
 		time.sleep(3)
 
+# Get current baseurl for ambari stack
+def get_base_url(ambari_address, ambari_port, username, password, url):
+	req = urllib2.Request(url, headers=get_headers(username,password))
+	response = urllib2.urlopen(req)
+	results = json.loads(response.read())
+	return results['Repositories']['base_url']
+
+# Post a new ambari stack url
+def post_base_url(ambari_address, ambari_port, username, password,stack_version,repo_id,os_type,base_url):
+	os_type = os_type.replace('centos','redhat')
+	url = 'http://'+ambari_address+':'+ambari_port+'/api/v1/stacks/HDP/versions/'+str(stack_version)+'/operating_systems/'+os_type+'/repositories/HDP-'+str(stack_version)
+	current_base_url = get_base_url(ambari_address, ambari_port, username, password, url)
+	if current_base_url == base_url:
+		return False
+	payload = { "Repositories": { "base_url": base_url, "verify_base_url": "true" } }
+	payload_s = json.dumps(payload)
+	req = urllib2.Request(url, data=payload_s, headers=get_headers(username,password))
+	try:
+		response = urllib2.urlopen(req)
+	except urllib2.HTTPError, error:
+		module.fail_json(msg='Failed to post base url: '+str(error.read()))
+	return True
+
 # Post a blurprint, return boolean if changed or not
 def post_blueprint(blueprint_name, blueprint_path, ambari_address, ambari_port, username, password, recommend, stack_ver=None, host_list=None, service_list=None):
 	if not os.path.isfile(blueprint_path):
@@ -216,13 +239,16 @@ def main():
 	global module
 	module = AnsibleModule(
 		argument_spec = dict(
-			action=dict(required=True, choices=['wait_for_ambari_api','wait_for_registered_hosts','post_blueprint','get_blueprint_names','get_cluster_names','post_cluster','get_blueprint']),
+			action=dict(required=True, choices=['post_base_url','wait_for_ambari_api','wait_for_registered_hosts','post_blueprint','get_blueprint_names','get_cluster_names','post_cluster','get_blueprint']),
 			path=dict(type='str'),
 			blueprint_name=dict(type='str'),
 			cluster_name=dict(type='str'),
 			stack_version=dict(type='str'),
 			stack_services=dict(type='str'),
 			hosts=dict(type='str'),
+			repo_id=dict(type='str'),
+			os_type=dict(type='str'),
+			base_url=dict(type='str'),
 			ignore_get_error=dict(default=False,type='bool'),
 			stack_recommendations=dict(default=False,type='bool'),
 			wait_for_build=dict(default=False,type='bool'),
@@ -237,6 +263,17 @@ def main():
 		wait_for_api(module.params['ambari_address'],module.params['ambari_port'],
 			module.params['username'], module.params['password'], module.params['build_timeout'])
 		module.exit_json(changed=False, comments='Ambari API up')
+	elif module.params['action'] == 'post_base_url':
+		for argu in ('stack_version','repo_id','os_type','base_url'):
+			if argu not in module.params.keys():
+				module.fail_json(msg='You must specify '+argu+' for this action')
+		changed = post_base_url(module.params['ambari_address'],module.params['ambari_port'],
+			module.params['username'],module.params['password'],module.params['stack_version'],
+			module.params['repo_id'],module.params['os_type'],module.params['base_url'])
+		if changed:
+			module.exit_json(changed=True, comments='Baseurl posted to Ambari')
+		else:
+			module.exit_json(changed=False, comments='Baseurl already in Ambari')
 	elif module.params['action'] == 'wait_for_registered_hosts':
 		if 'hosts' not in module.params.keys():
 			module.fail_json(msg='You must specify a host list for this action')

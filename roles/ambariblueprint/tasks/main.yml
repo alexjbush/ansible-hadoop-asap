@@ -21,6 +21,12 @@
   blueprints: action=wait_for_registered_hosts hosts="{{ groups[cluster_name]|join(',') }}"
   register: registerhosts
 
+- name: post repo url for this stack
+  blueprints: >
+        action=post_base_url stack_version={{ hdp_stack }} repo_id={{ hdp_version }}
+        os_type={{ ansible_distribution|lower+ansible_distribution_major_version }}
+        base_url={{ hdp_stack_repo }}
+
 - name: post blueprint to ambari
   blueprints: >
         action=post_blueprint path={{ blueprint_folder }}/{{ cluster_name }}_blueprint.json blueprint_name="{{ cluster_name }}"
