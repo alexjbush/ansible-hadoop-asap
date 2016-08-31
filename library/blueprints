@@ -150,13 +150,14 @@ def post_base_url(ambari_address, ambari_port, username, password,stack_version,
 	current_base_url = get_base_url(ambari_address, ambari_port, username, password, url)
 	if current_base_url == base_url:
 		return False
-	payload = { "Repositories": { "base_url": base_url, "verify_base_url": "true" } }
+	payload = { "Repositories": { "base_url": base_url, "verify_base_url": True } }
 	payload_s = json.dumps(payload)
 	req = urllib2.Request(url, data=payload_s, headers=get_headers(username,password))
+	req.get_method = lambda: 'PUT'
 	try:
 		response = urllib2.urlopen(req)
 	except urllib2.HTTPError, error:
-		module.fail_json(msg='Failed to post base url: '+str(error.read()))
+		module.fail_json(msg='Failed to post base url to '+url+' with payload:\n'+payload_s+'\n with error: '+str(error.read()))
 	return True
 
 # Post a blurprint, return boolean if changed or not
