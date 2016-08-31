@@ -19,9 +19,35 @@ if exit_code != 0
 end
 boxes = JSON.parse(output)
 
+#Check environment variables are set
+vagrant_os = ENV['OS_VERSION']
+if vagrant_os == nil
+	puts "Exported environment variable OS_VERSION not set. Please see boxes.json for valid values."
+	exit 1
+end
+
+vagrant_hdp = ENV['HDP_VERSION']
+if vagrant_hdp == nil
+	puts "Exported environment variable HDP_VERSION not set. Please see boxes.json for valid values."
+	exit 1
+end
+
+#Load box config and choose correct one
+box_def_file = File.read('boxes.json')
+box_def = JSON.parse(box_def_file)
+vagrant_box_os = box_def[vagrant_os]
+if vagrant_box_os == nil
+	puts "No box found for given OS_VERSION. Please see boxes.json for valid values."
+	exit 1
+end
+vagrant_box = vagrant_box_os[vagrant_hdp]
+if vagrant_box == nil
+	puts "No box found for given HDP_VERSION. Please see boxes.json for valid values."
+	exit 1
+end
+
 #Vagrant configuration
 Vagrant.configure(2) do |config|
-
 
   # Turn off shared folders
   config.vm.synced_folder ".", "/vagrant", id: "vagrant-root", disabled: true
@@ -44,7 +70,7 @@ Vagrant.configure(2) do |config|
       end
 
       config.vm.network :private_network, ip: opts["ip"]
-      config.vm.box = opts["vagrant_box"]
+      config.vm.box = vagrant_box
 
     end
   end

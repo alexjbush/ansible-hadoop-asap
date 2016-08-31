@@ -6,6 +6,7 @@ Ansible Playbooks to install Hortonworks Data Platform (HDP) using Ambari Bluepr
 This has been tested against CentOS6 and CentOS7 in Vagrant.
 
 ##### Updates
+* Preinstalled HDP boxes now available for Virtualbox (should considerably speed up cluster creation time).
 * Kerberos now deployed optionally during blueprint build. Specify it as a service in: [group_var/all](group_vars/all) (Only available Ambari 2.2.1+ due to [AMBARI-14409](https://issues.apache.org/jira/browse/AMBARI-14409), use the old deployment method if a lower Ambari version is needed)
 * Ranger now deployed as an optional service
 * Ranger SSL now optional. Check ssl_services in [group_var/all](group_vars/all)
@@ -21,9 +22,16 @@ Alternatively, you can use one of the instance creation methods below and use an
 #### Creating instances
 
 ###### Vagrant
-To use these scripts with Vagrant, change directory into [inventories/vagrant](inventories/vagrant), modify the [vagrant.json](inventories/vagrant/vagrant.json) file to your liking and run `vagrant up`. Make sure the hostnames are resolvable from the ansible host (hint: place entries in /etc/hosts).
+To use these scripts with Vagrant, change directory into [inventories/vagrant](inventories/vagrant), modify the [vagrant.json](inventories/vagrant/vagrant.json) file to your liking, export both OS and HDP version and run `vagrant up`. Make sure the hostnames are resolvable from the ansible host (hint: place entries in /etc/hosts).
 
-You can choose the Vagrant box (Cent 6 or 7) by editing [inventory.cfg](inventories/vagrant/inventory.cfg).
+```
+cd inventories/vagrant
+export OS_VERSION=centos6
+export HDP_VERSION=HDP-2.3.4.0
+vagrant up
+```
+
+You can check and edit the available boxes in [boxes.json](inventories/vagrant/boxes.json).
 
 #### Configuration
 Most configuration is done through the [group_vars](group_vars) files.

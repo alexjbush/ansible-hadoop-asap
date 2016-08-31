@@ -1,0 +1,15 @@
+{
+  "centos6" : {
+    "_comment" : "You can use the following box where specific builts haven't been creates: puppetlabs/centos-6.6-64-nocm",
+    "HDP-2.3.4.0" : "bushnoh/centos-6-6-HDP-2.3.4.0-x64",
+    "HDP-2.3.4.7" : "bushnoh/centos-6-6-HDP-2.3.4.7-x64",
+    "HDP-2.3.4.14-9" : "bushnoh/centos-6-6-HDP-2.3.4.14-9-x64",
+    "HDP-2.4.2.0" : "bushnoh/centos-6-6-HDP-2.4.2.0-x64",
+    "HDP-2.5.0.0" : "bushnoh/centos-6-6-HDP-2.5.0.0-x64"
+  },
+  "centos7" : {
+    "_comment" : "You can use the following box where specific builts haven't been creates: puppetlabs/centos-7.0-64-nocm",
+    "HDP-2.4.2.0" : "bushnoh/centos-7-0-HDP-2.4.2.0-x64",
+    "HDP-2.5.0.0" : "bushnoh/centos-7-0-HDP-2.5.0.0-x64"
+  }
+}

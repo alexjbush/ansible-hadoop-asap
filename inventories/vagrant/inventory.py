@@ -59,7 +59,7 @@ def read_config():
 	configs['ignore_existing'] = get_config_boolean(config,'ignore_existing_host_variables')
 	configs['group_by_cluster_name'] = get_config_boolean(config,'group_by_cluster_name')
 	configs['prepend_group_with_cluster_name'] = get_config_boolean(config,'prepend_groups_by_cluster_name')
-	host_vars=['ansible_ssh_user','ansible_ssh_private_key_file','vagrant_box']
+	host_vars=['ansible_ssh_user','ansible_ssh_private_key_file']
 	configs['host_vars']=dict()
 	for var in host_vars:
 		if config.has_option('default',var):
