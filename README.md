@@ -67,5 +67,5 @@ Currently, users are managed in an OpenLDAP server and their credentials are sto
 
 ## [License](LICENSE)
 
-Copyright (c) 2015 Alex Bush.  
+Copyright (c) 2016 Alex Bush.  
 Licensed under the [Apache License](LICENSE).

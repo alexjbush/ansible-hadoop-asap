@@ -7,7 +7,7 @@ krb_domain: vagrant
 java_version: 7
 java_subversion: 75
 #Ambari server version must match a repo version in repo_files
-ambari_version: 2.2.2.2-2
+ambari_version: 2.4.0.1
 mysql_connector_version: 5.1.39
 mysql_port: 3306
 #HDP version must match a HDP/OS version in groupvars/ambariserver. You can give custom stack versions by defining them in groupvars/ambariserver.
