@@ -9,7 +9,7 @@
 		admin_keytab = /var/kerberos/krb5kdc/kadm5.keytab
                 acl_file = /var/kerberos/krb5kdc/kadm5.acl
                 key_stash_file = /var/kerberos/krb5kdc/.k5.{{ krb_realm }}
-                max_life = 300d 0h 0m 0s
-                max_renewable_life = 1460d 0h 0m 0s
+                max_life = {{ kerberos_ticket_max_life }}
+                max_renewable_life = {{ kerberos_ticket_max_renewable_life }}
 		supported_enctypes = aes256-cts:normal aes128-cts:normal des3-hmac-sha1:normal arcfour-hmac:normal des-hmac-sha1:normal des-cbc-md5:normal des-cbc-crc:normal
         }
