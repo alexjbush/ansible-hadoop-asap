@@ -26,3 +26,6 @@ ssl_services: ""
 use_ambari_recommendations: yes
 #Needed for grafana password
 blueprint_default_password: bigdata
+#Directory and Kerberos services
+kerberos_service: mitkdc
+directory_service: openldap

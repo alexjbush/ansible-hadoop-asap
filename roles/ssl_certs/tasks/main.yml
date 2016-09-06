@@ -20,7 +20,7 @@
   sudo: yes
   args:
     creates: "{{ cert_dir }}/{{ item }}.jks"
-  when: "inventory_hostname == groups['kdcmaster'][0] or item != '127.0.0.1'"
+  when: "inventory_hostname == groups['directoryservices'][0] or item != '127.0.0.1'"
   register: create_keys
 
 - name: create ssl certificates and import into truststore
@@ -31,27 +31,27 @@
   sudo: yes
   args:
     creates: "{{ cert_dir }}/{{ item }}.crt"
-  when: "inventory_hostname == groups['kdcmaster'][0] or item != '127.0.0.1'"
+  when: "inventory_hostname == groups['directoryservices'][0] or item != '127.0.0.1'"
   register: create_keys
 
 - name: create temp folder on remote fs
   file: path="{{ temp_remote_path }}" state=directory
-  when: "create_keys.changed and inventory_hostname == groups['kdcmaster'][0]"
+  when: "create_keys.changed and inventory_hostname == groups['directoryservices'][0]"
 
 - name: tar up certs if they have changed
   shell: "tar -czf {{ temp_remote_path }}/{{ tar_filename }} -C {{ cert_dir }} {*.jks,*.crt}"
   args:
     chdir: "{{ cert_dir }}"
-  when: "create_keys.changed and inventory_hostname == groups['kdcmaster'][0]"
+  when: "create_keys.changed and inventory_hostname == groups['directoryservices'][0]"
 
 - name: create temp folder on local fs
   file: path="{{ temp_local_path }}" state=directory
-  when: "create_keys.changed and inventory_hostname == groups['kdcmaster'][0]"
+  when: "create_keys.changed and inventory_hostname == groups['directoryservices'][0]"
   delegate_to: 127.0.0.1
 
 - name: fetch the cert bundle
   fetch: dest="{{ temp_local_path }}" src="{{ temp_remote_path }}/{{ tar_filename }}" flat=yes fail_on_missing=yes
-  when: "create_keys.changed and inventory_hostname == groups['kdcmaster'][0]"
+  when: "create_keys.changed and inventory_hostname == groups['directoryservices'][0]"
 
 - name: check if we have a tar bundle to work on
   stat: path="{{ temp_local_path }}/{{ tar_filename }}"
@@ -65,11 +65,11 @@
 
 - name: remove temp folder on remote fs
   file: path="{{ temp_remote_path }}" state=absent
-  when: "create_keys.changed and inventory_hostname == groups['kdcmaster'][0]"
+  when: "create_keys.changed and inventory_hostname == groups['directoryservices'][0]"
 
 - name: create temp folder on local fs
   file: path="{{ temp_local_path }}" state=absent
-  when: "create_keys.changed and inventory_hostname == groups['kdcmaster'][0]"
+  when: "create_keys.changed and inventory_hostname == groups['directoryservices'][0]"
   delegate_to: 127.0.0.1
 
 - name: import certs into java truststore

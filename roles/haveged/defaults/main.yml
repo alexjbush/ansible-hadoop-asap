@@ -1,0 +1,3 @@
+---
+# Minimum amount of entropy required not to require haveged
+min_entropy: 1000

@@ -1,11 +1,7 @@
 ---
 - include: pb_provision_env.yml
 
-- include: pb_create_mit_kdc.yml
-
-- include: pb_create_openldap.yml
-
-- include: pb_configure_sssd.yml
+- include: pb_directory_services.yml
 
 - include: pb_ssl_certificates.yml
 

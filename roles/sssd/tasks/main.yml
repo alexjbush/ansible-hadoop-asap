@@ -19,9 +19,9 @@
 - name: run authconfig to configure sssd
   shell: >
     authconfig --enablesssd --enablesssdauth --enablelocauthorize --enableldap --enablekrb5
-    --ldapserver=ldap://{{ groups[cluster_name+'_openldap'][0] }}:389 --disableldaptls
+    --ldapserver=ldap://{{ groups[cluster_name+'_directoryservices'][0] }}:389 --disableldaptls
     --ldapbasedn={{ olcSuffix }} --enablemkhomedir --enablecachecreds --update
-    --krb5kdc={{ groups[cluster_name+'_kdcmaster'][0] }} --krb5adminserver={{ groups[cluster_name+'_kdcmaster'][0] }}
+    --krb5kdc={{ groups[cluster_name+'_directoryservices'][0] }} --krb5adminserver={{ groups[cluster_name+'_directoryservices'][0] }}
     --krb5realm={{ krb_realm }}
   args:
     creates: /etc/sssd/sssd.conf

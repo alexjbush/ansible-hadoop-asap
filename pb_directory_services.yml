@@ -1,0 +1,48 @@
+---
+### Shared steps to group hosts
+- name: place directory service node into correct groups
+  hosts: directoryservices
+  tasks:
+    - name: group by the directory service
+      group_by: key={{ directory_service }}server
+    - name: group by the kerberos service
+      group_by: key={{ kerberos_service }}server
+
+- name: place directory service clients into correct groups
+  hosts: all
+  tasks:
+    - name: group by the directory service
+      group_by: key={{ directory_service }}client
+    - name: group by the kerberos service
+      group_by: key={{ kerberos_service }}client
+
+### MIT KRB + OPENLDAP
+- name: create krb5 file
+  hosts: mitkdcclient:&{{ cluster_name }}
+  roles:
+    - etc_krb5
+
+- name: install haveged (for AWS vms due to low entropy)
+  hosts: mitkdcserver:&{{ cluster_name }}
+  roles:
+    - haveged
+
+- name: create the kdc
+  hosts: mitkdcserver:&{{ cluster_name }}
+  roles:
+    - kdcmaster
+
+- name: create kerberos users
+  hosts: mitkdcserver:&{{ cluster_name }}
+  roles:
+    - create_kerberos_users
+
+- name: create openldap server
+  hosts: openldapserver:&{{ cluster_name }}
+  roles:
+    - openldap_server
+
+- name: configure sssd to read from ldap
+  hosts: openldapclient:&{{ cluster_name }}
+  roles:
+    - sssd

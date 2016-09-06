@@ -14,8 +14,8 @@
 
 [realms]
  {{ krb_realm }} = {
-  kdc = {{ groups[cluster_name+'_kdcmaster'][0] }}
-  admin_server = {{ groups[cluster_name+'_kdcmaster'][0] }}
+  kdc = {{ groups[cluster_name+'_directoryservices'][0] }}
+  admin_server = {{ groups[cluster_name+'_directoryservices'][0] }}
  }
 
 [domain_realm]

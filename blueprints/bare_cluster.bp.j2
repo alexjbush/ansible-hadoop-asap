@@ -17,11 +17,11 @@
             "properties" : {
               "realm" : "{{ krb_realm }}",
               "kdc_type" : "mit-kdc",
-              "kdc_host" : "{{ groups[cluster_name+'_kdcmaster'][0] }}",
+              "kdc_host" : "{{ groups[cluster_name+'_directoryservices'][0] }}",
               "encryption_types": "aes des3-cbc-sha1 rc4 des-cbc-md5",
               "ldap_url" : "",
               "container_dn" : "",
-              "admin_server_host" : "{{ groups[cluster_name+'_kdcmaster'][0] }}"
+              "admin_server_host" : "{{ groups[cluster_name+'_directoryservices'][0] }}"
             }
           }
         },

@@ -1,5 +1,0 @@
----
-- name: configure sssd to read from ldap
-  hosts: "{{ cluster_name }}"
-  roles:
-    - sssd

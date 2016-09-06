@@ -2,7 +2,7 @@
 # without the risk of hitting several clusters at once.
 [examplecluster:children]
 examplecluster_datanode
-examplecluster_kdcmaster
+examplecluster_directoryservices
 examplecluster_ambariserver
 examplecluster_mn01
 examplecluster_mn02
@@ -12,8 +12,8 @@ examplecluster_mysql
 [datanode:children]
 examplecluster_datanode
 
-[kdcmaster:children]
-examplecluster_kdcmaster
+[directoryservices:children]
+examplecluster_directoryservices
 
 [ambariserver:children]
 examplecluster_ambariserver
@@ -36,7 +36,7 @@ exampledn01.example.com
 exampledn02.example.com
 exampledn03.example.com
 
-[examplecluster_kdcmaster]
+[examplecluster_directoryservices]
 examplemn01.example.com
 
 [examplecluster_ambariserver]

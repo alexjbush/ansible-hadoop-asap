@@ -1,25 +1,9 @@
 ---
-- name: check to see if haveged is installed
-  command: rpm -q haveged
-  register: haveged_check
-  failed_when: haveged_check.rc > 1
+- name: check entropy available
+  command: cat /proc/sys/kernel/random/entropy_avail
+  register: entropy_avail
   changed_when: no
 
-- name: install epel
-  yum: name=epel-release state=present
-  sudo: yes
-  when: haveged_check.rc == 1
-
-- name: install haveged
-  yum: name=haveged state=present
-  sudo: yes
-  when: haveged_check.rc == 1
-
-- name: remove epel
-  yum: name=epel-release state=absent
-  sudo: yes
-  when: haveged_check.rc == 1
-
-- name: start haveged
-  service: name=haveged state=started
-  sudo: yes
+- name: install haveged if needed
+  include: install_haveged.yml
+  when: entropy_avail|int < min_entropy
