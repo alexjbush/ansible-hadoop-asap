@@ -34,7 +34,7 @@
   sudo: yes
 
 - name: untar the jce policies
-  command: unzip "/tmp/UnlimitedJCEPolicyJDK{{ java_version }}.zip"
+  command: unzip -o "/tmp/UnlimitedJCEPolicyJDK{{ java_version }}.zip"
   args: 
     chdir: /tmp/
   when: "not jce_test.stat.exists"

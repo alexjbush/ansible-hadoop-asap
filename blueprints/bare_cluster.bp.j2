@@ -94,8 +94,8 @@
           "ranger.service.https.attrib.clientAuth" : "want",
           "ranger.service.https.attrib.keystore.keyalias" : "{{ groups[cluster_name+'_mn03'][0] }}",
 {% endif %}
-          "ranger.jpa.jdbc.url" : "jdbc:mysql://{{ groups[cluster_name+'_mn03'][0] }}:3306/{{ mysql_ranger_database }}",
-          "ranger.jpa.audit.jdbc.url" : "jdbc:mysql://{{ groups[cluster_name+'_mn03'][0] }}:3306/{{ mysql_rangeraudit_database }}"
+          "ranger.jpa.jdbc.url" : "jdbc:mysql://{{ groups[cluster_name+'_mysql'][0] }}:3306/{{ mysql_ranger_database }}",
+          "ranger.jpa.audit.jdbc.url" : "jdbc:mysql://{{ groups[cluster_name+'_mysql'][0] }}:3306/{{ mysql_rangeraudit_database }}"
         }
       }
     },
@@ -293,7 +293,7 @@
             "oozie-site" : {
                 "properties" : {
                     "oozie.service.JPAService.jdbc.driver" : "com.mysql.jdbc.Driver",
-                    "oozie.service.JPAService.jdbc.url" : "jdbc:mysql://{{ groups[cluster_name+'_mn03'][0] }}/oozie",
+                    "oozie.service.JPAService.jdbc.url" : "jdbc:mysql://{{ groups[cluster_name+'_mysql'][0] }}/oozie",
                     "oozie.service.JPAService.jdbc.username" : "{{ mysql_oozie_user }}",
                     "oozie.db.schema.name" : "{{ mysql_oozie_database }}"
                 }
@@ -337,7 +337,7 @@
                     "hive.server2.enable.doAs" : "false",
 {% endif %}
                     "hive.enforce.bucketing": "false",
-                    "javax.jdo.option.ConnectionURL": "jdbc:mysql://{{ groups[cluster_name+'_mn03'][0] }}/hive?createDatabaseIfNotExist=true"
+                    "javax.jdo.option.ConnectionURL": "jdbc:mysql://{{ groups[cluster_name+'_mysql'][0] }}/hive?createDatabaseIfNotExist=true"
                 }
             }
         },
