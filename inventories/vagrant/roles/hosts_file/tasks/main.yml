@@ -1,0 +1,6 @@
+---
+- name: remove the vagrant binding to 127.0.0.1, this causes hadoop to listen on wrong address
+  lineinfile: >
+    dest=/etc/hosts regexp="^127\.0\.0\.1.*"
+    line="127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4"
+  sudo: yes

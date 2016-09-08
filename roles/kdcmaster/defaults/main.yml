@@ -1,3 +1,5 @@
 ---
-kerberos_ticket_max_life: "0d 12h 0m 0s"
-kerberos_ticket_max_renewable_life: "0d 12h 0m 0s"
+#kerberos_ticket_max_life: "0d 12h 0m 0s"
+#kerberos_ticket_max_renewable_life: "0d 12h 0m 0s"
+kerberos_ticket_max_life: "0d 0h 30m 0s"
+kerberos_ticket_max_renewable_life: "0d 0h 30m 0s"
