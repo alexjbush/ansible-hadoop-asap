@@ -21,6 +21,10 @@
   file: path=/tmp/{{ jdk_tarball_file }}.rpm state=absent
   when: jdk_check.rc == 1
 
+- name: create JCE path
+  file: path="{{ jce_security_path }}" state=directory mode=0755 owner=root group=root
+  sudo: yes
+
 - name: check to see if unlimited jce has been done
   stat: path="{{ jce_security_path }}/unlimited_jce_applied.ansible"
   register: jce_test
