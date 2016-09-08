@@ -1,5 +1,8 @@
 ---
+#dns_enabled = yes means ansible will NOT configure the hosts file to include all nodes and addresses on each node,
+#It assumes you already have a working DNS configuration. no is the opposite of the previous statement.
 dns_enabled: no
+# Kerberos configuration.
 krb_realm: HADOOP.TEST
 krb_domain: vagrant
 #Oracle JDK versions
@@ -12,8 +15,6 @@ mysql_connector_version: 5.1.39
 mysql_port: 3306
 #HDP version must match a HDP/OS version in groupvars/ambariserver. You can give custom stack versions by defining them in groupvars/ambariserver.
 hdp_version: 2.3.4.0
-blueprint_file: bare_cluster.bp.j2
-cluster_definition_file: bare_cluster.ct.j2
 #KERBEROS, SPARK, HBASE, STORM, KAFKA, OOZIE and FALCON are optional. Omit them from this list to prevent them being installed
 #blueprint_services: "KERBEROS,RANGER,SPARK,HBASE,STORM,KAFKA,HDFS,OOZIE,HIVE,FALCON,MAPREDUCE2,PIG,SQOOP,TEZ,YARN,ZOOKEEPER"
 blueprint_services: "RANGER,KAFKA,STORM,KERBEROS,HDFS,HIVE,MAPREDUCE2,PIG,SQOOP,TEZ,YARN,ZOOKEEPER"

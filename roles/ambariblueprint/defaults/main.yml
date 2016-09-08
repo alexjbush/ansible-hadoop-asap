@@ -1,2 +1,4 @@
 ---
 blueprint_folder: /etc/ambari-server/conf/blueprints
+blueprint_file: bare_cluster.bp.j2
+cluster_definition_file: bare_cluster.ct.j2
